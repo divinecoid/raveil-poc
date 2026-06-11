@@ -448,20 +448,21 @@
         }
         .craft-list {
             list-style: none;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
         .craft-list li {
-            padding: 2.5rem 0;
+            padding: 3.5rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             font-size: 1.1rem;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
             display: flex;
+            justify-content: flex-start;
             align-items: center;
-            justify-content: center;
-            gap: 2rem;
+            gap: 4rem;
             color: var(--text-primary);
+            text-align: left;
         }
         .craft-list li:last-child {
             border-bottom: none;
@@ -469,8 +470,12 @@
         .craft-list li span {
             color: var(--text-secondary);
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-style: italic;
+            text-align: left;
+            width: 40px;
+            text-transform: none;
+            letter-spacing: 0.05em;
         }
 
         /* --- Footer/Contact Section --- */
@@ -629,6 +634,14 @@
         @media (max-width: 768px) {
             .craft-content h2 {
                 font-size: 2.5rem;
+            }
+            .craft-list li {
+                padding: 2.5rem 0;
+                font-size: 1rem;
+                gap: 2rem;
+            }
+            .craft-list li span {
+                width: 30px;
             }
             .hero-tagline {
                 font-size: 0.75rem;

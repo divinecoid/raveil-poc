@@ -49,3 +49,14 @@ Route::post('/track-product-click', function (\Illuminate\Http\Request $request)
     }
     return response()->json(['success' => true]);
 });
+
+// Helper routes for cPanel/shared hosting deployments
+Route::get('/setup-storage', function () {
+    \Illuminate\Support\Facades\Artisan::call('storage:link');
+    return 'Storage linked successfully! Your images should now appear. <a href="/">Go back</a>';
+});
+
+Route::get('/clear-cache', function () {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return 'Cache cleared successfully! <a href="/admin">Try Admin Login</a>';
+});
