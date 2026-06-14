@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductClick extends Model
 {
+    use \App\Models\Traits\BelongsToCompany;
+
     public $timestamps = false;
 
     protected $fillable = ['product_id', 'created_at'];

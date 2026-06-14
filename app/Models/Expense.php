@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
+    use \App\Models\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = [

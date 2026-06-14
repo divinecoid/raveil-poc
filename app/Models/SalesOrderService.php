@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SalesOrderService extends Model
 {
+    use \App\Models\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = [

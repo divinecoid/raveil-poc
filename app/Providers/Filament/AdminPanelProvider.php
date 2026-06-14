@@ -28,6 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->tenant(\App\Models\Company::class)
             ->brandName('RAVEIL')
             ->darkMode(true, true)
             ->font('Inter')

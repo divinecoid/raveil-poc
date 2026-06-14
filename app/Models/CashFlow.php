@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class CashFlow extends Model
 {
+    use \App\Models\Traits\BelongsToCompany;
+
     public $table = 'cash_flows';
     
     public $timestamps = false;

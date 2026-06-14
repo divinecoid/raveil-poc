@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class StockMovement extends Model
 {
+    use \App\Models\Traits\BelongsToCompany;
+
     protected $guarded = [];
 
     public function product()
