@@ -32,6 +32,10 @@ class ProductForm
                 TextInput::make('price')
                     ->numeric()
                     ->prefix('Rp'),
+                TextInput::make('minimum_stock')
+                    ->numeric()
+                    ->default(0)
+                    ->required(),
                 FileUpload::make('image')
                     ->image()
                     ->disk('public')

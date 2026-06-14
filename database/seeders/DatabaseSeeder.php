@@ -151,6 +151,8 @@ class DatabaseSeeder extends Seeder
             'image' => 'products/audi-diffuser.jpg',
             'is_active' => true,
         ]);
+
+        $this->call(RaveilDataSeeder::class);
     }
 }
 

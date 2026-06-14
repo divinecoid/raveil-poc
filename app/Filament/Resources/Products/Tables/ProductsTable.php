@@ -30,7 +30,7 @@ class ProductsTable
                 TextColumn::make('slug')
                     ->searchable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('IDR', locale: 'id')
                     ->sortable(),
                 ImageColumn::make('image')
                     ->disk('public'),

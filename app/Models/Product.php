@@ -22,4 +22,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductClick::class);
     }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function salesOrderItems()
+    {
+        return $this->hasMany(SalesOrderItem::class);
+    }
 }

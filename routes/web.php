@@ -60,3 +60,39 @@ Route::get('/clear-cache', function () {
     \Illuminate\Support\Facades\Artisan::call('optimize:clear');
     return 'Cache cleared successfully! <a href="/admin">Try Admin Login</a>';
 });
+
+Route::get('/admin/finance/pdf', function (\Illuminate\Http\Request $request) {
+    // We assume the user is authenticated if they reached here from admin panel
+    $start = $request->input('start', now()->startOfMonth()->toDateString());
+    $end = $request->input('end', now()->endOfMonth()->toDateString());
+
+    $invoices = \App\Models\Invoice::where('status', 'Paid')
+        ->whereBetween('issue_date', [$start, $end])
+        ->get();
+    
+    $expenses = \App\Models\Expense::where('status', 'Paid')
+        ->whereBetween('date', [$start, $end])
+        ->get();
+
+    $totalIncome = $invoices->sum('total');
+    $totalExpense = $expenses->sum('amount');
+    $netProfit = $totalIncome - $totalExpense;
+
+    $receivables = \App\Models\Invoice::where('status', 'Unpaid')
+        ->whereBetween('issue_date', [$start, $end])
+        ->get();
+
+    $payables = \App\Models\Expense::where('status', 'Unpaid')
+        ->whereBetween('date', [$start, $end])
+        ->get();
+
+    $totalReceivable = $receivables->sum('total');
+    $totalPayable = $payables->sum('amount');
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.finance_report', compact(
+        'start', 'end', 'invoices', 'expenses', 'totalIncome', 'totalExpense', 'netProfit',
+        'receivables', 'payables', 'totalReceivable', 'totalPayable'
+    ));
+
+    return $pdf->download('Finance_Report_' . $start . '_to_' . $end . '.pdf');
+})->name('finance.pdf');
