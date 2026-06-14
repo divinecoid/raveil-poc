@@ -139,6 +139,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
             ])
             ->navigationGroups([
+                'Master Data',
                 'Transaksi',
                 'Finance',
             ])
