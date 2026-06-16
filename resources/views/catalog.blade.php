@@ -454,20 +454,26 @@
         .craft-list li {
             padding: 3.5rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 1.1rem;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
             display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            gap: 4rem;
-            color: var(--text-primary);
-            text-align: left;
+            justify-content: center;
         }
         .craft-list li:last-child {
             border-bottom: none;
         }
-        .craft-list li span {
+        .craft-item-inner {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 3rem;
+            width: 100%;
+            max-width: 425px;
+            font-size: 1.1rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            text-align: left;
+        }
+        .craft-item-inner span {
             color: var(--text-secondary);
             font-family: 'Cormorant Garamond', serif;
             font-size: 1.3rem;
@@ -637,11 +643,17 @@
             }
             .craft-list li {
                 padding: 2.5rem 0;
-                font-size: 1rem;
-                gap: 2rem;
             }
-            .craft-list li span {
-                width: 30px;
+            .craft-item-inner {
+                font-size: 0.85rem;
+                letter-spacing: 0.1em;
+                gap: 1rem;
+                width: 280px;
+                max-width: 100%;
+            }
+            .craft-item-inner span {
+                width: 25px;
+                font-size: 1.1rem;
             }
             .hero-tagline {
                 font-size: 0.75rem;
@@ -824,10 +836,26 @@
                         engineered not just for aesthetics, but for measurable aerodynamic performance
                     </p>
                     <ul class="craft-list">
-                        <li class="reveal-up delay-1"><span>01</span> Carbon Fiber Expertise</li>
-                        <li class="reveal-up delay-2"><span>02</span> Precision Manufacturing</li>
-                        <li class="reveal-up delay-3"><span>03</span> Bespoke Design</li>
-                        <li class="reveal-up delay-4"><span>04</span> Aerodynamic Performance</li>
+                        <li class="reveal-up delay-1">
+                            <div class="craft-item-inner">
+                                <span>01</span> Carbon Fiber Expertise
+                            </div>
+                        </li>
+                        <li class="reveal-up delay-2">
+                            <div class="craft-item-inner">
+                                <span>02</span> Precision Manufacturing
+                            </div>
+                        </li>
+                        <li class="reveal-up delay-3">
+                            <div class="craft-item-inner">
+                                <span>03</span> Bespoke Design
+                            </div>
+                        </li>
+                        <li class="reveal-up delay-4">
+                            <div class="craft-item-inner">
+                                <span>04</span> Aerodynamic Performance
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>
