@@ -28,11 +28,22 @@ class RaveilDataSeeder extends Seeder
         });
 
         // 3. Products
+        $vehicleModelsList = [
+            'Toyota' => ['GR Yaris', 'Supra MK5', 'GR86', 'Innova Zenix Hybrid'],
+            'Honda' => ['Civic Type R', 'HR-V RS', 'CR-V Turbo'],
+            'Mitsubishi' => ['Lancer Evo X', 'Pajero Sport Dakar', 'Xpander Cross'],
+            'BMW' => ['M3 G80', 'M4 G82', '330i M Sport'],
+            'Mercedes-Benz' => ['C63 AMG', 'A45 S AMG', 'G63 AMG'],
+            'Porsche' => ['911 Carrera', '718 Cayman GT4', 'Taycan Turbo']
+        ];
         $partNames = ['Front Lip', 'Rear Spoiler', 'Side Skirts', 'Diffuser', 'Hood', 'Mirror Covers', 'Steering Wheel', 'Interior Trim'];
         $products = collect();
         foreach (range(1, 15) as $i) {
             $cat = $categories->random();
             $brand = $brands->random();
+            $models = $vehicleModelsList[$brand->name] ?? ['Universal'];
+            $carModel = fake()->randomElement($models);
+            
             $price = fake()->numberBetween(10, 500) * 10000;
             $stock = fake()->numberBetween(0, 50);
             $minStock = fake()->numberBetween(0, 10);
@@ -42,7 +53,8 @@ class RaveilDataSeeder extends Seeder
             ], [
                 'category_id' => $cat->id,
                 'brand_id' => $brand->id,
-                'name' => $brand->name . ' Carbon Fiber ' . fake()->randomElement($partNames),
+                'car_model' => $carModel,
+                'name' => $brand->name . ' ' . $carModel . ' Carbon Fiber ' . fake()->randomElement($partNames),
                 'description' => fake()->sentence(),
                 'price' => $price,
                 'stock_quantity' => $stock,

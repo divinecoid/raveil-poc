@@ -6,8 +6,16 @@ use App\Models\Setting;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', function () {
-    $products = Product::where('is_active', true)->latest()->get();
+    $products = Product::where('is_active', true)->with('brand', 'category')->latest()->get();
     
+    // Extract unique brands that have active products
+    $brands = $products->pluck('brand')->filter()->unique('id')->values();
+    
+    // Check if there are active products with no brand (Raveil Custom / Universal)
+    $hasUniversal = $products->contains(function ($product) {
+        return is_null($product->brand_id);
+    });
+
     // Fetch settings and convert to array like ['whatsapp' => '...', 'instagram' => '...']
     $settings = Setting::pluck('value', 'key')->toArray();
 
@@ -30,7 +38,7 @@ Route::get('/', function () {
         $visitorSetting->save();
     }
 
-    return view('catalog', compact('products', 'whatsapp', 'instagram', 'heroVideoUrl'));
+    return view('catalog', compact('products', 'brands', 'hasUniversal', 'whatsapp', 'instagram', 'heroVideoUrl'));
 });
 
 Route::post('/track-whatsapp-click', function () {

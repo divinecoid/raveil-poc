@@ -78,6 +78,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $aerodynamics->id,
             'brand_id' => $porsche->id,
+            'car_model' => '911 (992) GT3',
             'name' => 'Porsche 911 (992) GT3 Carbon Fiber Rear Wing',
             'slug' => 'porsche-992-gt3-carbon-wing',
             'description' => 'High-gloss motorsport-grade carbon fiber rear wing to enhance downforce and stability at speed.',
@@ -89,6 +90,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $aerodynamics->id,
             'brand_id' => $ferrari->id,
+            'car_model' => 'Roma',
             'name' => 'Ferrari Roma Carbon Fiber Front Spoiler',
             'slug' => 'ferrari-roma-carbon-front-spoiler',
             'description' => 'A sleek, low-profile front splitter highlighting the aggressive stance of the Roma while directing airflow.',
@@ -100,6 +102,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $bodykits->id,
             'brand_id' => $lamborghini->id,
+            'car_model' => 'Huracan Sterrato',
             'name' => 'Lamborghini Huracan Sterrato Carbon Fender Flares',
             'slug' => 'lamborghini-sterrato-carbon-fenders',
             'description' => 'Widened carbon fiber arch extensions suitable for off-road aesthetics and wider tires.',
@@ -111,6 +114,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $exhaust->id,
             'brand_id' => $bmw->id,
+            'car_model' => 'M4 (G82)',
             'name' => 'BMW M4 (G82) Carbon Fiber Exhaust Tips',
             'slug' => 'bmw-g82-carbon-exhaust-tips',
             'description' => 'Signature quad exhaust tips finished in high-heat carbon sleeves over titanium pipelines.',
@@ -122,6 +126,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $steering->id,
             'brand_id' => null, // Raveil custom product
+            'car_model' => 'Universal',
             'name' => 'Raveil Custom Forged Carbon Steering Wheel',
             'slug' => 'raveil-forged-carbon-steering-wheel',
             'description' => 'Individually built racing steering wheel featuring forged carbon structures, red 12 o\'clock marker, and premium Alcantara wrap.',
@@ -133,6 +138,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $accessories->id,
             'brand_id' => $aston->id,
+            'car_model' => 'Vantage',
             'name' => 'Aston Martin Vantage Carbon Side Gills',
             'slug' => 'aston-martin-vantage-carbon-gills',
             'description' => 'Glossy carbon fiber replacement vents for the front fenders, highlighting the Vantage\'s classic profile.',
@@ -144,6 +150,7 @@ class DatabaseSeeder extends Seeder
         Product::create([
             'category_id' => $bodykits->id,
             'brand_id' => $audi->id,
+            'car_model' => 'RS6 (C8)',
             'name' => 'Audi RS6 (C8) Carbon Fiber Rear Diffuser',
             'slug' => 'audi-rs6-c8-carbon-diffuser',
             'description' => 'Deeply channeled rear diffuser designed to integrate seamlessly with the OEM bumper, optimizing under-car vacuum.',

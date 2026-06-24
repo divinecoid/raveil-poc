@@ -20,6 +20,8 @@ class ProductForm
                     ->required(),
                 Select::make('brand_id')
                     ->relationship('brand', 'name'),
+                TextInput::make('car_model')
+                    ->placeholder('e.g., 911 (992) GT3, Roma, M4 (G82)'),
                 TextInput::make('name')
                     ->required()
                     ->live(onBlur: true)
