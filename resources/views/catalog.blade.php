@@ -1319,7 +1319,9 @@
                     @foreach($brands as $index => $brand)
                         <div class="brand-card reveal-scale" data-brand-slug="{{ $brand->slug }}" data-brand-name="{{ $brand->name }}" style="transition-delay: {{ $index * 0.05 }}s">
                             <div class="brand-svg-container">
-                                @if(isset($brandLogos[$brand->slug]))
+                                @if($brand->logo)
+                                    <img src="{{ Storage::url($brand->logo) }}" alt="{{ $brand->name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                                @elseif(isset($brandLogos[$brand->slug]))
                                     {!! $brandLogos[$brand->slug] !!}
                                 @else
                                     <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2">

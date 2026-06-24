@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Brands\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class BrandForm
@@ -18,6 +19,11 @@ class BrandForm
                 TextInput::make('slug')
                     ->required()
                     ->unique(ignoreRecord: true),
+                FileUpload::make('logo')
+                    ->image()
+                    ->disk('public')
+                    ->directory('brands')
+                    ->preserveFilenames(),
             ]);
     }
 }

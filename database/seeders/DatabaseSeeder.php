@@ -22,11 +22,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Seed the Admin User for local testing
-        User::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'Raveil Admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
         ]);
+
+        // Attach admin user to all seeded companies
+        $companies = \App\Models\Company::all();
+        foreach ($companies as $company) {
+            $admin->companies()->attach($company->id);
+        }
 
         // 2. Seed Settings
         Setting::updateOrCreate(['key' => 'whatsapp'], ['value' => '6281234567890']);
