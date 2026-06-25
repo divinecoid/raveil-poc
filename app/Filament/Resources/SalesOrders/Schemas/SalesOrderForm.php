@@ -45,6 +45,10 @@ class SalesOrderForm
                             ->options(fn () => \App\Models\Brand::pluck('name', 'name')->toArray())
                             ->searchable()
                             ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($set) {
+                                $set('model', null);
+                            })
                             ->createOptionForm([
                                 \Filament\Forms\Components\TextInput::make('name')
                                     ->required()
@@ -57,9 +61,20 @@ class SalesOrderForm
                                 return $brand->name;
                             }),
                         \Filament\Forms\Components\Select::make('model')
-                            ->options(function () {
-                                return \App\Models\Vehicle::pluck('model', 'model')
-                                    ->merge(\App\Models\Product::pluck('car_model', 'car_model'))
+                            ->options(function ($get) {
+                                $brandName = $get('brand');
+                                $queryVehicles = \App\Models\Vehicle::query();
+                                $queryProducts = \App\Models\Product::query();
+                                
+                                if ($brandName) {
+                                    $queryVehicles->whereRaw('LOWER(brand) = ?', [strtolower(trim($brandName))]);
+                                    $queryProducts->whereHas('brand', function ($q) use ($brandName) {
+                                        $q->whereRaw('LOWER(name) = ?', [strtolower(trim($brandName))]);
+                                    });
+                                }
+                                
+                                return $queryVehicles->pluck('model', 'model')
+                                    ->merge($queryProducts->pluck('car_model', 'car_model'))
                                     ->filter()
                                     ->unique()
                                     ->mapWithKeys(fn ($item) => [$item => $item])
