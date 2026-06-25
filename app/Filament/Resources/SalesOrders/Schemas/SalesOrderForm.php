@@ -41,12 +41,38 @@ class SalesOrderForm
                         \Filament\Forms\Components\TextInput::make('license_plate')
                             ->required()
                             ->maxLength(255),
-                        \Filament\Forms\Components\TextInput::make('brand')
+                        \Filament\Forms\Components\Select::make('brand')
+                            ->options(fn () => \App\Models\Brand::pluck('name', 'name')->toArray())
+                            ->searchable()
                             ->required()
-                            ->maxLength(255),
-                        \Filament\Forms\Components\TextInput::make('model')
+                            ->createOptionForm([
+                                \Filament\Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(function (array $data) {
+                                $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                                $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
+                                $brand = \App\Models\Brand::create($data);
+                                return $brand->name;
+                            }),
+                        \Filament\Forms\Components\Select::make('model')
+                            ->options(function () {
+                                return \App\Models\Vehicle::pluck('model', 'model')
+                                    ->merge(\App\Models\Product::pluck('car_model', 'car_model'))
+                                    ->filter()
+                                    ->unique()
+                                    ->mapWithKeys(fn ($item) => [$item => $item])
+                                    ->toArray();
+                            })
+                            ->searchable()
                             ->required()
-                            ->maxLength(255),
+                            ->createOptionForm([
+                                \Filament\Forms\Components\TextInput::make('model')
+                                    ->required()
+                                    ->maxLength(255),
+                            ])
+                            ->createOptionUsing(fn (array $data) => $data['model']),
                         \Filament\Forms\Components\TextInput::make('year')
                             ->maxLength(255),
                     ])
