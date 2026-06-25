@@ -3,12 +3,17 @@
 namespace App\Filament\Resources\Invoices\Pages;
 
 use App\Filament\Resources\Invoices\InvoiceResource;
+use App\Models\Invoice;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListInvoices extends ListRecords
 {
     protected static string $resource = InvoiceResource::class;
+
+    public ?string $pendingStatusRecordKey = null;
+    public ?string $pendingStatusNewStatus = null;
 
     protected function getHeaderActions(): array
     {
@@ -17,8 +22,38 @@ class ListInvoices extends ListRecords
         ];
     }
 
-    public function triggerUpdateStatus(int|string $recordKey, string $newStatus): void
+    // Filament resolves this automatically via the "{name}Action" convention
+    public function confirmUpdateStatusAction(): Action
     {
-        $this->mountTableAction('updateStatus', (string) $recordKey, ['newStatus' => $newStatus]);
+        return Action::make('confirmUpdateStatus')
+            ->requiresConfirmation()
+            ->modalHeading('Update Invoice Status')
+            ->modalDescription(fn () => 'Are you sure you want to change the status to "' . $this->pendingStatusNewStatus . '"?')
+            ->modalSubmitActionLabel('Confirm')
+            ->modalCancelActionLabel('Cancel')
+            ->modalWidth('sm')
+            ->action(function (): void {
+                if (! $this->pendingStatusRecordKey || ! $this->pendingStatusNewStatus) {
+                    return;
+                }
+
+                $invoice = Invoice::find($this->pendingStatusRecordKey);
+                $invoice?->update(['status' => $this->pendingStatusNewStatus]);
+
+                \Filament\Notifications\Notification::make()
+                    ->title('Status updated to ' . $this->pendingStatusNewStatus)
+                    ->success()
+                    ->send();
+
+                $this->pendingStatusRecordKey = null;
+                $this->pendingStatusNewStatus = null;
+            });
+    }
+
+    public function handleInvoiceStatusChange(string $recordKey, string $newStatus): void
+    {
+        $this->pendingStatusRecordKey = $recordKey;
+        $this->pendingStatusNewStatus = $newStatus;
+        $this->mountAction('confirmUpdateStatus');
     }
 }

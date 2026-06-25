@@ -17,7 +17,9 @@
         selectStatus(newStatus) {
             if (newStatus === this.currentStatus) { this.open = false; return; }
             this.open = false;
-            $wire.triggerUpdateStatus(@js((string) $key), newStatus);
+            const component = Livewire.all().find(c => c.name === 'App\\Filament\\Resources\\Invoices\\Pages\\ListInvoices');
+            if (!component) { console.error('ListInvoices component not found'); return; }
+            component.$wire.handleInvoiceStatusChange(@js((string) $key), newStatus);
         }
     }"
     x-on:click.stop
@@ -47,32 +49,12 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         `"
     >
-        {{-- Status dot --}}
-        <span
-            :style="`
-                width: 7px;
-                height: 7px;
-                border-radius: 50%;
-                background: ${statuses[currentStatus]?.dot ?? '#9ca3af'};
-                flex-shrink: 0;
-            `"
-        ></span>
-        {{-- Status label --}}
+        <span :style="`width:7px;height:7px;border-radius:50%;background:${statuses[currentStatus]?.dot ?? '#9ca3af'};flex-shrink:0;`"></span>
         <span x-text="statuses[currentStatus]?.label ?? currentStatus"></span>
-        {{-- Chevron --}}
         <svg
-            :style="`
-                width: 11px; height: 11px;
-                transition: transform 0.15s ease;
-                transform: ${open ? 'rotate(180deg)' : 'rotate(0deg)'};
-                flex-shrink: 0;
-                opacity: 0.55;
-                margin-left: 2px;
-            `"
+            :style="`width:11px;height:11px;transition:transform 0.15s ease;transform:${open?'rotate(180deg)':'rotate(0deg)'};flex-shrink:0;opacity:0.55;margin-left:2px;`"
             fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
-        >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
+        ><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
     </button>
 
     {{-- Dropdown panel --}}
@@ -84,60 +66,19 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        style="
-            position: absolute;
-            top: calc(100% + 5px);
-            left: 0;
-            z-index: 60;
-            min-width: 155px;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12), 0 4px 10px -3px rgba(0,0,0,0.08);
-            overflow: hidden;
-            padding: 4px;
-        "
+        style="position:absolute;top:calc(100% + 5px);left:0;z-index:60;min-width:155px;background:white;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.12),0 4px 10px -3px rgba(0,0,0,0.08);overflow:hidden;padding:4px;"
     >
         <template x-for="(config, status) in statuses" :key="status">
             <button
                 type="button"
                 x-on:click.stop="selectStatus(status)"
-                :style="`
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    width: 100%;
-                    padding: 8px 10px;
-                    border: none;
-                    border-radius: 7px;
-                    background: ${currentStatus === status ? config.bg : 'transparent'};
-                    color: ${config.text};
-                    font-size: 0.78rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    text-align: left;
-                    transition: background 0.1s ease;
-                `"
+                :style="`display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border:none;border-radius:7px;background:${currentStatus===status?config.bg:'transparent'};color:${config.text};font-size:0.78rem;font-weight:600;cursor:pointer;text-align:left;transition:background 0.1s ease;`"
                 x-on:mouseenter="$el.style.background = config.bg"
                 x-on:mouseleave="$el.style.background = currentStatus === status ? config.bg : 'transparent'"
             >
-                {{-- Dot --}}
-                <span
-                    :style="`
-                        width: 8px; height: 8px;
-                        border-radius: 50%;
-                        background: ${config.dot};
-                        flex-shrink: 0;
-                    `"
-                ></span>
-                {{-- Label --}}
+                <span :style="`width:8px;height:8px;border-radius:50%;background:${config.dot};flex-shrink:0;`"></span>
                 <span x-text="config.label"></span>
-                {{-- Checkmark for current --}}
-                <svg
-                    x-show="currentStatus === status"
-                    style="width: 13px; height: 13px; margin-left: auto; flex-shrink: 0; opacity: 0.8;"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"
-                >
+                <svg x-show="currentStatus === status" style="width:13px;height:13px;margin-left:auto;flex-shrink:0;opacity:0.8;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
             </button>

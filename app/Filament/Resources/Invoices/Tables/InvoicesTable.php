@@ -56,26 +56,6 @@ class InvoicesTable
             ])
             ->recordActions([
                 EditAction::make(),
-                \Filament\Actions\Action::make('updateStatus')
-                    ->hidden() // Registered but not shown in row actions UI; triggered via Alpine.js $wire.mountTableAction()
-                    ->requiresConfirmation()
-                    ->modalHeading('Update Invoice Status')
-                    ->modalDescription('Are you sure you want to change the invoice status?')
-                    ->modalSubmitActionLabel('Confirm')
-                    ->modalCancelActionLabel('Cancel')
-                    ->modalWidth('sm')
-                    ->action(function (array $arguments, $record): void {
-                        $newStatus = $arguments['newStatus'] ?? null;
-                        if (! $newStatus) {
-                            return;
-                        }
-                        $record->update(['status' => $newStatus]);
-
-                        \Filament\Notifications\Notification::make()
-                            ->title('Status updated to ' . $newStatus)
-                            ->success()
-                            ->send();
-                    }),
                 \Filament\Actions\Action::make('downloadPdf')
                     ->label('Download PDF')
                     ->icon('heroicon-o-arrow-down-tray')
