@@ -20,6 +20,15 @@ class ProjectsTable
                     ->label('Customer Name')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('salesOrder.vehicle.license_plate')
+                    ->label('License Plate')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('salesOrder.vehicle.brand')
+                    ->label('Vehicle')
+                    ->formatStateUsing(fn ($state, $record) => $record->salesOrder?->vehicle ? "{$record->salesOrder->vehicle->brand} {$record->salesOrder->vehicle->model}" : '-')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('salesOrder.invoices.invoice_number')
                     ->label('Invoice Number')
                     ->sortable()

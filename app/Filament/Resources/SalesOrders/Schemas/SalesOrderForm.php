@@ -72,23 +72,75 @@ class SalesOrderForm
                 \Filament\Forms\Components\Repeater::make('items')
                     ->relationship()
                     ->schema([
-                        \Filament\Forms\Components\TextInput::make('product_name')
+                        \Filament\Forms\Components\Select::make('product_id')
+                            ->relationship('product', 'name')
+                            ->searchable()
+                            ->preload()
                             ->required()
-                            ->maxLength(255),
+                            ->live()
+                            ->createOptionForm([
+                                \Filament\Forms\Components\TextInput::make('name')
+                                    ->required()
+                                    ->maxLength(255),
+                                \Filament\Forms\Components\Select::make('category_id')
+                                    ->relationship('category', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                \Filament\Forms\Components\Select::make('brand_id')
+                                    ->relationship('brand', 'name')
+                                    ->searchable()
+                                    ->preload(),
+                                \Filament\Forms\Components\TextInput::make('price')
+                                    ->numeric()
+                                    ->label('Price'),
+                                \Filament\Forms\Components\Textarea::make('description')
+                                    ->columnSpanFull(),
+                            ])
+                            ->createOptionUsing(function (array $data) {
+                                $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                                $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
+                                return \App\Models\Product::create($data)->getKey();
+                            })
+                            ->afterStateUpdated(function ($state, $set) {
+                                if ($state) {
+                                    $product = \App\Models\Product::find($state);
+                                    if ($product) {
+                                        $set('product_name', $product->name);
+                                        $set('unit_price', $product->price ?? 0);
+                                        $set('subtotal', $product->price ?? 0);
+                                    }
+                                } else {
+                                    $set('product_name', null);
+                                    $set('unit_price', 0);
+                                    $set('subtotal', 0);
+                                }
+                            }),
+                        \Filament\Forms\Components\Hidden::make('product_name'),
                         TextInput::make('quantity')
                             ->numeric()
                             ->default(1)
-                            ->required(),
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $unitPrice = (float) $get('unit_price');
+                                $set('subtotal', $state * $unitPrice);
+                            }),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
-                            ->required(),
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                $quantity = (int) $get('quantity');
+                                $set('subtotal', $state * $quantity);
+                            }),
                         TextInput::make('subtotal')
                             ->numeric()
                             ->default(0)
                             ->required(),
                     ])
-                    ->columns(4)
+                    ->columns(5)
                     ->columnSpanFull(),
                 \Filament\Forms\Components\Repeater::make('services')
                     ->relationship()
