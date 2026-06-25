@@ -165,6 +165,32 @@ class DatabaseSeeder extends Seeder
             'is_active' => true,
         ]);
 
+        // 6. Seed Studio Gallery Photos
+        $raveilCompany = \App\Models\Company::where('slug', 'raveil')->first();
+        if ($raveilCompany) {
+            \App\Models\StudioPhoto::create([
+                'company_id' => $raveilCompany->id,
+                'title' => 'Vacuum Infusion Process',
+                'image' => 'products/porsche-wing.jpg',
+                'sort_order' => 1,
+                'is_active' => true,
+            ]);
+            \App\Models\StudioPhoto::create([
+                'company_id' => $raveilCompany->id,
+                'title' => 'Autoclave High-Temp Curing',
+                'image' => 'products/ferrari-spoiler.jpg',
+                'sort_order' => 2,
+                'is_active' => true,
+            ]);
+            \App\Models\StudioPhoto::create([
+                'company_id' => $raveilCompany->id,
+                'title' => 'Twill Carbon Fiber Weave Inspection',
+                'image' => 'products/steering-wheel.jpg',
+                'sort_order' => 3,
+                'is_active' => true,
+            ]);
+        }
+
         $this->call(RaveilDataSeeder::class);
     }
 }

@@ -1096,6 +1096,152 @@
             transform: rotate(90deg);
         }
 
+        /* --- Studio Gallery --- */
+        .studio-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 5rem;
+        }
+
+        .studio-gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            aspect-ratio: 4 / 3;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .studio-gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(0.2) contrast(1.1);
+        }
+
+        .studio-gallery-item:hover .studio-gallery-img {
+            transform: scale(1.08);
+            filter: grayscale(0) contrast(1);
+        }
+
+        .studio-gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+        }
+
+        .studio-gallery-item:hover .studio-gallery-overlay {
+            opacity: 1;
+        }
+
+        .studio-gallery-title {
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #ffffff;
+            transform: translateY(10px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .studio-gallery-item:hover .studio-gallery-title {
+            transform: translateY(0);
+        }
+
+        /* --- Lightbox Modal --- */
+        .lightbox-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 2rem;
+        }
+
+        .lightbox-modal.lightbox-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .lightbox-content {
+            position: relative;
+            z-index: 10;
+            max-width: 90vw;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 4px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transform: scale(0.95);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lightbox-modal.lightbox-active .lightbox-img {
+            transform: scale(1);
+        }
+
+        .lightbox-caption {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .lightbox-close-btn {
+            position: absolute;
+            top: -3.5rem;
+            right: 0;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            line-height: 1;
+        }
+
+        .lightbox-close-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            color: var(--text-secondary);
+        }
+
         @media (max-width: 992px) {
             .product-modal-content {
                 grid-template-columns: 1fr;
@@ -1468,8 +1614,31 @@
                         <li class="reveal-up delay-4"><span>04</span> Aerodynamic Performance</li>
                     </ul>
                 </div>
+
+                @if($studioPhotos->isNotEmpty())
+                    <div class="studio-gallery reveal-up">
+                        @foreach($studioPhotos as $photo)
+                            <div class="studio-gallery-item" data-image-url="{{ Storage::url($photo->image) }}" data-caption="{{ $photo->title }}">
+                                <img src="{{ Storage::url($photo->image) }}" alt="{{ $photo->title }}" class="studio-gallery-img">
+                                <div class="studio-gallery-overlay">
+                                    <span class="studio-gallery-title">{{ $photo->title ?? 'Raveil Studio' }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </div>
         </section>
+
+        <!-- Lightbox Modal -->
+        <div id="lightbox-modal" class="lightbox-modal">
+            <div class="lightbox-backdrop"></div>
+            <div class="lightbox-content">
+                <button class="lightbox-close-btn">&times;</button>
+                <img id="lightbox-img" class="lightbox-img" src="" alt="">
+                <span id="lightbox-caption" class="lightbox-caption"></span>
+            </div>
+        </div>
 
         <a href="https://wa.me/{{ $whatsapp }}?text={{ urlencode('Hello Raveil Industries, I am interested in your bespoke carbon fiber designs.') }}" 
            target="_blank" 
@@ -1777,6 +1946,44 @@
                     closeProductModal();
                 }
             });
+
+            // --- Lightbox Operations ---
+            const lightbox = document.getElementById('lightbox-modal');
+            if (lightbox) {
+                const lightboxImg = document.getElementById('lightbox-img');
+                const lightboxCaption = document.getElementById('lightbox-caption');
+                const lightboxCloseBtn = lightbox.querySelector('.lightbox-close-btn');
+                const lightboxBackdrop = lightbox.querySelector('.lightbox-backdrop');
+
+                function openLightbox(imageUrl, captionText) {
+                    if (lightboxImg) lightboxImg.src = imageUrl;
+                    if (lightboxCaption) lightboxCaption.textContent = captionText || '';
+                    lightbox.classList.add('lightbox-active');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                function closeLightbox() {
+                    lightbox.classList.remove('lightbox-active');
+                    document.body.style.overflow = '';
+                }
+
+                document.querySelectorAll('.studio-gallery-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const imgUrl = item.getAttribute('data-image-url');
+                        const caption = item.getAttribute('data-caption');
+                        openLightbox(imgUrl, caption);
+                    });
+                });
+
+                if (lightboxCloseBtn) lightboxCloseBtn.addEventListener('click', closeLightbox);
+                if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && lightbox.classList.contains('lightbox-active')) {
+                        closeLightbox();
+                    }
+                });
+            }
 
             // Initialize breadcrumbs
             updateBreadcrumbs();
