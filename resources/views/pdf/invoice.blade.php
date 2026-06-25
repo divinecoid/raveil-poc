@@ -1,112 +1,327 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Invoice {{ $invoice->invoice_number }}</title>
     <style>
-        body { font-family: sans-serif; font-size: 14px; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .details { margin-bottom: 20px; }
-        .details table { width: 100%; }
-        .details td { padding: 5px; }
-        .items { width: 100%; border-collapse: collapse; }
-        .items th, .items td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .items th { background-color: #f2f2f2; }
-        .totals { margin-top: 20px; text-align: right; }
-        .totals table { float: right; width: 300px; }
-        .totals td { padding: 5px; }
+        @font-face {
+            font-family: 'Barlow';
+            src: url('{{ public_path('fonts/barlow/BarlowCondensed-Regular.ttf') }}') format('truetype');
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: 'Barlow';
+            src: url('{{ public_path('fonts/barlow/BarlowCondensed-Bold.ttf') }}') format('truetype');
+            font-weight: 700;
+        }
+        @font-face {
+            font-family: 'Barlow';
+            src: url('{{ public_path('fonts/barlow/BarlowCondensed-Black.ttf') }}') format('truetype');
+            font-weight: 900;
+        }
+
+        /* DomPDF: @page margin-bottom leaves space for the fixed footer */
+        @page {
+            margin: 0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
+            font-size: 11pt;
+            width: 100%;
+        }
+
+        /* ─── FIXED FOOTER (DomPDF renders fixed elements on every page) ─── */
+        /* We only want one page so this is fine */
+        #footer-payment {
+            position: fixed;
+            bottom: 48pt;
+            left: 52pt;
+            right: 52pt;
+        }
+
+        #brand-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 46pt;
+            background-color: #111111;
+            text-align: center;
+            padding-top: 10pt;
+            font-size: 24pt;
+            font-weight: 900;
+            letter-spacing: 12pt;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        /* ─── WATERMARK ─── */
+        #watermark {
+            position: fixed;
+            bottom: 80pt;
+            right: -10pt;
+            width: 240pt;
+            opacity: 0.07;
+            z-index: -1;
+        }
+
+        /* ─── MAIN CONTENT ─── */
+        /* bottom padding = footer area height (payment ~70pt + brand 46pt + gap) */
+        .content {
+            padding: 44pt 52pt 160pt 52pt;
+        }
+
+        /* ─── TITLE ─── */
+        .title {
+            font-size: 54pt;
+            font-weight: 900;
+            letter-spacing: 4pt;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 6pt;
+        }
+
+        /* ─── META ROW ─── */
+        .meta {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32pt;
+        }
+        .meta td { padding: 0; vertical-align: top; }
+        .inv-num {
+            font-size: 11.5pt;
+            font-weight: 700;
+            letter-spacing: 0.5pt;
+        }
+        .cust-name {
+            font-size: 13.5pt;
+            font-weight: 900;
+            letter-spacing: 1.5pt;
+            text-transform: uppercase;
+            text-align: right;
+        }
+        .inv-date {
+            font-size: 10pt;
+            color: #bbbbbb;
+            text-align: center;
+            margin-top: 2pt;
+        }
+
+        /* ─── ITEMS TABLE ─── */
+        .items {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items thead th {
+            font-size: 8pt;
+            font-weight: 700;
+            letter-spacing: 2pt;
+            text-transform: uppercase;
+            color: #888888;
+            padding-bottom: 6pt;
+            border-bottom: 0.5pt solid #444444;
+            text-align: left;
+        }
+        .items thead th.r { text-align: right; }
+
+        .items tbody td {
+            padding: 8pt 0;
+            font-size: 10.5pt;
+            font-weight: 400;
+            color: #eeeeee;
+            border-bottom: 0.5pt solid #2c2c2c;
+        }
+        .items tbody td.r { text-align: right; }
+        .items tbody td.nr { border-bottom: none; }
+
+        /* summary label/value */
+        .s-lbl {
+            font-size: 8pt;
+            font-weight: 700;
+            letter-spacing: 2pt;
+            text-transform: uppercase;
+            color: #888888;
+            text-align: right;
+            padding-right: 14pt;
+            border-bottom: none !important;
+        }
+        .s-val {
+            font-size: 10.5pt;
+            color: #cccccc;
+            text-align: right;
+            border-bottom: none !important;
+        }
+
+        /* grand total */
+        .g-lbl {
+            font-size: 9.5pt;
+            font-weight: 900;
+            letter-spacing: 2pt;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-align: right;
+            padding-right: 14pt;
+            border-top: 0.5pt solid #555555;
+            border-bottom: none !important;
+            padding-top: 8pt;
+        }
+        .g-val {
+            font-size: 12.5pt;
+            font-weight: 900;
+            color: #ffffff;
+            text-align: right;
+            border-top: 0.5pt solid #555555;
+            border-bottom: none !important;
+            padding-top: 8pt;
+        }
+
+        .col-item  { width: 46%; }
+        .col-qty   { width: 8%;  }
+        .col-price { width: 23%; }
+        .col-total { width: 23%; }
+
+        /* ─── FOOTER PAYMENT ─── */
+        .pay-text {
+            font-size: 8.5pt;
+            color: #cccccc;
+            line-height: 1.8;
+        }
+        .pay-text strong { color: #ffffff; font-weight: 700; }
+        .pay-thanks {
+            margin-top: 8pt;
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .qr-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 2pt;
+            text-transform: uppercase;
+            color: #aaaaaa;
+            margin-top: 3pt;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>INVOICE</h1>
-    </div>
 
-    <div class="details">
-        <table>
-            <tr>
-                <td><strong>Invoice No:</strong> {{ $invoice->invoice_number }}</td>
-                <td style="text-align: right;"><strong>Date:</strong> {{ $invoice->issue_date ? \Carbon\Carbon::parse($invoice->issue_date)->format('d M Y') : 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Customer:</strong> {{ $invoice->customer ? $invoice->customer->name : 'N/A' }}</td>
-                <td style="text-align: right;"><strong>Due Date:</strong> {{ $invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date)->format('d M Y') : 'N/A' }}</td>
-            </tr>
-            <tr>
-                <td><strong>Status:</strong> <span style="text-transform: capitalize;">{{ $invoice->status }}</span></td>
-                <td></td>
-            </tr>
-        </table>
-    </div>
+{{-- Watermark --}}
+<div id="watermark">
+    <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M45 15 L185 170 L45 325"  stroke="#ffffff" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M135 15 L275 170 L135 325" stroke="#ffffff" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+</div>
 
-    @php
-        $products = $invoice->items->where('type', 'product');
-        $services = $invoice->items->where('type', 'service');
-    @endphp
-
-    @if($products->count() > 0)
-    <h3 style="margin-bottom: 10px;">Products / Parts</h3>
-    <table class="items" style="margin-bottom: 20px;">
-        <thead>
-            <tr>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Subtotal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($products as $item)
-            <tr>
-                <td>{{ $item->description }}</td>
-                <td>{{ $item->quantity }}</td>
-                <td>{{ number_format($item->unit_price, 2) }}</td>
-                <td>{{ number_format($item->subtotal, 2) }}</td>
-            </tr>
-            @endforeach
-        </tbody>
+{{-- Footer payment (fixed, above brand bar) --}}
+<div id="footer-payment">
+    <table width="100%" style="border-collapse:collapse;">
+        <tr>
+            <td style="vertical-align:bottom; width:65%;">
+                <div class="pay-text">
+                    Please make payment to the following account:<br>
+                    <strong>Bank Name:</strong> Bank Central Asia (BCA)<br>
+                    <strong>Account Name:</strong> William Neilson Likamto<br>
+                    <strong>Account Number:</strong> 6042123672
+                </div>
+                <div class="pay-thanks">Thank you for your purchase!</div>
+            </td>
+            <td style="vertical-align:bottom; text-align:right; width:35%;">
+                <img src="{{ public_path('images/qr-linktree.png') }}" width="70" height="70" alt="QR" style="display:inline-block;">
+                <div class="qr-label">LINKTREE</div>
+            </td>
+        </tr>
     </table>
-    @endif
+</div>
 
-    @if($services->count() > 0)
-    <h3 style="margin-bottom: 10px;">Services / Labor</h3>
+{{-- Brand bar --}}
+<div id="brand-bar">CARBONIZED</div>
+
+{{-- Main content --}}
+<div class="content">
+
+    <div class="title">INVOICE</div>
+
+    <table class="meta">
+        <tr>
+            <td style="width:50%;">
+                <div class="inv-num">#{{ $invoice->invoice_number }}</div>
+            </td>
+            <td style="width:50%;">
+                <div class="cust-name">{{ strtoupper($invoice->customer?->name ?? 'N/A') }}</div>
+                <div class="inv-date">
+                    {{ $invoice->issue_date ? \Carbon\Carbon::parse($invoice->issue_date)->format('m/Y') : '' }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    @php $allItems = $invoice->items; @endphp
+
     <table class="items">
         <thead>
             <tr>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Subtotal</th>
+                <th class="col-item">Item</th>
+                <th class="col-qty r">QTY</th>
+                <th class="col-price r">Unit Price</th>
+                <th class="col-total r">Total</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($services as $item)
+            @forelse ($allItems as $item)
             <tr>
-                <td>{{ $item->description }}</td>
-                <td>{{ $item->quantity }}</td>
-                <td>{{ number_format($item->unit_price, 2) }}</td>
-                <td>{{ number_format($item->subtotal, 2) }}</td>
+                <td class="col-item">{{ $item->description }}</td>
+                <td class="col-qty r">{{ $item->quantity }}</td>
+                <td class="col-price r">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                <td class="col-total r">Rp {{ number_format($item->subtotal ?? $item->unit_price * $item->quantity, 0, ',', '.') }}</td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="4" style="color:#555; padding:10pt 0; border-bottom:none;">No items.</td>
+            </tr>
+            @endforelse
+
+            {{-- spacer --}}
+            <tr><td colspan="4" style="height:16pt; border-bottom:none;"></td></tr>
+
+            {{-- SUBTOTAL --}}
+            <tr>
+                <td colspan="2" class="nr"></td>
+                <td class="s-lbl">Subtotal</td>
+                <td class="s-val">Rp {{ number_format($invoice->subtotal ?? 0, 0, ',', '.') }}</td>
+            </tr>
+
+            {{-- SHIPPING --}}
+            <tr>
+                <td colspan="2" class="nr"></td>
+                <td class="s-lbl">Shipping</td>
+                <td class="s-val">-</td>
+            </tr>
+
+            {{-- TAX --}}
+            <tr>
+                <td colspan="2" class="nr"></td>
+                <td class="s-lbl">Tax</td>
+                <td class="s-val">Rp {{ number_format($invoice->tax ?? 0, 0, ',', '.') }}</td>
+            </tr>
+
+            {{-- GRAND TOTAL --}}
+            <tr>
+                <td colspan="2" style="border:none; padding:0;"></td>
+                <td class="g-lbl">Grand Total</td>
+                <td class="g-val">Rp {{ number_format($invoice->total ?? 0, 0, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
-    @endif
 
-    <div class="totals">
-        <table>
-            <tr>
-                <td><strong>Subtotal:</strong></td>
-                <td>{{ number_format($invoice->subtotal, 2) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Tax:</strong></td>
-                <td>{{ number_format($invoice->tax, 2) }}</td>
-            </tr>
-            <tr>
-                <td><strong>Total:</strong></td>
-                <td><strong>{{ number_format($invoice->total, 2) }}</strong></td>
-            </tr>
-        </table>
-    </div>
+</div>{{-- .content --}}
+
 </body>
 </html>
