@@ -19,11 +19,41 @@ class SalesOrderForm
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->relationship('customer', 'name')
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->live(),
                 \Filament\Forms\Components\Select::make('vehicle_id')
-                    ->relationship('vehicle', 'license_plate')
+                    ->relationship('vehicle', 'license_plate', function ($query, $get) {
+                        $customerId = $get('customer_id');
+                        if ($customerId) {
+                            $query->where('customer_id', $customerId);
+                        }
+                    })
+                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->license_plate} ({$record->brand} {$record->model})")
                     ->searchable()
-                    ->preload(),
+                    ->preload()
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('license_plate')
+                            ->required()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('brand')
+                            ->required()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('model')
+                            ->required()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('year')
+                            ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data, $get) {
+                        $customerId = $get('customer_id');
+                        if (! $customerId) {
+                            throw new \Illuminate\Validation\ValidationException(
+                                \Illuminate\Support\Facades\Validator::make([], [])->errors()->add('vehicle_id', 'Please select a customer first before creating a vehicle.')
+                            );
+                        }
+                        $data['customer_id'] = $customerId;
+                        return \App\Models\Vehicle::create($data)->getKey();
+                    }),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
                         'Pending' => 'Pending',
@@ -42,11 +72,9 @@ class SalesOrderForm
                 \Filament\Forms\Components\Repeater::make('items')
                     ->relationship()
                     ->schema([
-                        \Filament\Forms\Components\Select::make('product_id')
-                            ->relationship('product', 'name')
+                        \Filament\Forms\Components\TextInput::make('product_name')
                             ->required()
-                            ->searchable()
-                            ->preload(),
+                            ->maxLength(255),
                         TextInput::make('quantity')
                             ->numeric()
                             ->default(1)

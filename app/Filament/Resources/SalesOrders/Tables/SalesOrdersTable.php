@@ -94,7 +94,7 @@ class SalesOrdersTable
                             \App\Models\InvoiceItem::create([
                                 'invoice_id' => $invoice->id,
                                 'type' => 'product',
-                                'description' => $item->product ? $item->product->name : 'Item',
+                                'description' => $item->product_name ?? ($item->product ? $item->product->name : 'Item'),
                                 'quantity' => $item->quantity,
                                 'unit_price' => $item->unit_price,
                                 'subtotal' => $item->subtotal,
