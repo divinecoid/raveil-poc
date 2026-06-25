@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 
 class InvoicesTable
@@ -37,40 +38,8 @@ class InvoicesTable
                 TextColumn::make('total')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Unpaid' => 'danger',
-                        'Paid' => 'success',
-                        'Cancelled' => 'gray',
-                        default => 'primary',
-                    })
-                    ->action(
-                        \Filament\Actions\Action::make('updateStatus')
-                            ->schema([
-                                \Filament\Forms\Components\Select::make('status')
-                                    ->options([
-                                        'Unpaid' => 'Unpaid',
-                                        'Paid' => 'Paid',
-                                        'Cancelled' => 'Cancelled',
-                                    ])
-                                    ->required(),
-                            ])
-                            ->requiresConfirmation()
-                            ->modalHeading('Update Status')
-                            ->modalDescription('Are you sure you would like to do this?')
-                            ->modalSubmitActionLabel('Confirm')
-                            ->modalCancelActionLabel('Cancel')
-                            ->fillForm(fn ($record) => ['status' => $record->status])
-                            ->action(function (array $data, $record): void {
-                                $record->update(['status' => $data['status']]);
-
-                                \Filament\Notifications\Notification::make()
-                                    ->title('Status Updated')
-                                    ->success()
-                                    ->send();
-                            })
-                    )
+                ViewColumn::make('status')
+                    ->view('filament.tables.columns.invoice-status-select')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -86,6 +55,26 @@ class InvoicesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                \Filament\Actions\Action::make('updateStatus')
+                    ->hidden() // Registered but not shown in row actions UI; triggered via Alpine.js $wire.mountTableAction()
+                    ->requiresConfirmation()
+                    ->modalHeading('Update Invoice Status')
+                    ->modalDescription('Are you sure you want to change the invoice status?')
+                    ->modalSubmitActionLabel('Confirm')
+                    ->modalCancelActionLabel('Cancel')
+                    ->modalWidth('sm')
+                    ->action(function (array $arguments, $record): void {
+                        $newStatus = $arguments['newStatus'] ?? null;
+                        if (! $newStatus) {
+                            return;
+                        }
+                        $record->update(['status' => $newStatus]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Status updated to ' . $newStatus)
+                            ->success()
+                            ->send();
+                    }),
                 \Filament\Actions\Action::make('downloadPdf')
                     ->label('Download PDF')
                     ->icon('heroicon-o-arrow-down-tray')
