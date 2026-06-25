@@ -20,7 +20,12 @@ class SalesOrderForm
                     ->relationship('customer', 'name')
                     ->searchable()
                     ->preload()
-                    ->live(),
+                    ->live()
+                    ->afterStateUpdated(function ($state, $set) {
+                        $set('vehicle_id', null);
+                        $set('vehicle_brand', null);
+                        $set('vehicle_model', null);
+                    }),
                 \Filament\Forms\Components\Select::make('vehicle_id')
                     ->relationship('vehicle', 'license_plate', function ($query, $get) {
                         $customerId = $get('customer_id');
@@ -31,6 +36,7 @@ class SalesOrderForm
                     ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->license_plate} ({$record->brand} {$record->model})")
                     ->searchable()
                     ->preload()
+                    ->live()
                     ->createOptionForm([
                         \Filament\Forms\Components\TextInput::make('license_plate')
                             ->required()
@@ -44,7 +50,7 @@ class SalesOrderForm
                         \Filament\Forms\Components\TextInput::make('year')
                             ->maxLength(255),
                     ])
-                    ->createOptionUsing(function (array $data, $get) {
+                    ->createOptionUsing(function (array $data, $get, $set) {
                         $customerId = $get('customer_id');
                         if (! $customerId) {
                             throw new \Illuminate\Validation\ValidationException(
@@ -52,7 +58,36 @@ class SalesOrderForm
                             );
                         }
                         $data['customer_id'] = $customerId;
-                        return \App\Models\Vehicle::create($data)->getKey();
+                        $vehicle = \App\Models\Vehicle::create($data);
+                        $set('vehicle_brand', $vehicle->brand);
+                        $set('vehicle_model', $vehicle->model);
+                        return $vehicle->getKey();
+                    })
+                    ->afterStateUpdated(function ($state, $set) {
+                        if (! $state) {
+                            $set('vehicle_brand', null);
+                            $set('vehicle_model', null);
+                            return;
+                        }
+                        $vehicle = \App\Models\Vehicle::find($state);
+                        if ($vehicle) {
+                            $set('vehicle_brand', $vehicle->brand);
+                            $set('vehicle_model', $vehicle->model);
+                        }
+                    }),
+                TextInput::make('vehicle_brand')
+                    ->label('Brand Mobil')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->formatStateUsing(function ($record) {
+                        return $record?->vehicle?->brand;
+                    }),
+                TextInput::make('vehicle_model')
+                    ->label('Tipe Mobil')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->formatStateUsing(function ($record) {
+                        return $record?->vehicle?->model;
                     }),
                 \Filament\Forms\Components\Select::make('status')
                     ->options([
