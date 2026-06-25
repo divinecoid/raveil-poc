@@ -63,31 +63,45 @@ class SalesOrderForm
                         \Filament\Forms\Components\Select::make('model')
                             ->options(function ($get) {
                                 $brandName = $get('brand');
-                                $queryVehicles = \App\Models\Vehicle::query();
-                                $queryProducts = \App\Models\Product::query();
+                                $query = \App\Models\CarModel::query();
                                 
                                 if ($brandName) {
-                                    $queryVehicles->whereRaw('LOWER(brand) = ?', [strtolower(trim($brandName))]);
-                                    $queryProducts->whereHas('brand', function ($q) use ($brandName) {
+                                    $query->whereHas('brand', function ($q) use ($brandName) {
                                         $q->whereRaw('LOWER(name) = ?', [strtolower(trim($brandName))]);
                                     });
                                 }
                                 
-                                return $queryVehicles->pluck('model', 'model')
-                                    ->merge($queryProducts->pluck('car_model', 'car_model'))
-                                    ->filter()
-                                    ->unique()
-                                    ->mapWithKeys(fn ($item) => [$item => $item])
-                                    ->toArray();
+                                return $query->pluck('name', 'name')->toArray();
                             })
                             ->searchable()
                             ->required()
                             ->createOptionForm([
-                                \Filament\Forms\Components\TextInput::make('model')
+                                \Filament\Forms\Components\TextInput::make('name')
                                     ->required()
                                     ->maxLength(255),
                             ])
-                            ->createOptionUsing(fn (array $data) => $data['model']),
+                            ->createOptionUsing(function (array $data, $get) {
+                                $brandName = $get('brand');
+                                $brandId = null;
+                                if ($brandName) {
+                                    $brand = \App\Models\Brand::whereRaw('LOWER(name) = ?', [strtolower(trim($brandName))])->first();
+                                    if ($brand) {
+                                        $brandId = $brand->id;
+                                    }
+                                }
+                                
+                                $companyId = \Filament\Facades\Filament::getTenant()->id;
+                                $slug = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
+                                
+                                $carModel = \App\Models\CarModel::create([
+                                    'company_id' => $companyId,
+                                    'brand_id' => $brandId,
+                                    'name' => $data['name'],
+                                    'slug' => $slug,
+                                ]);
+                                
+                                return $carModel->name;
+                            }),
                         \Filament\Forms\Components\TextInput::make('year')
                             ->maxLength(255),
                     ])
