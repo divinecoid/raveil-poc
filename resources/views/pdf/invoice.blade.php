@@ -39,26 +39,12 @@
         /* We only want one page so this is fine */
         #footer-payment {
             position: fixed;
-            bottom: 48pt;
+            bottom: 32pt;
             left: 52pt;
             right: 52pt;
         }
 
-        #brand-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 46pt;
-            background-color: #111111;
-            text-align: center;
-            padding-top: 10pt;
-            font-size: 24pt;
-            font-weight: 900;
-            letter-spacing: 12pt;
-            text-transform: uppercase;
-            color: #ffffff;
-        }
+
 
         /* ─── WATERMARK ─── */
         #watermark {
@@ -73,7 +59,7 @@
         /* ─── MAIN CONTENT ─── */
         /* bottom padding = footer area height (payment ~70pt + brand 46pt + gap) */
         .content {
-            padding: 44pt 52pt 160pt 52pt;
+            padding: 44pt 52pt 120pt 52pt;
         }
 
         /* ─── TITLE ─── */
@@ -242,7 +228,7 @@
 </div>
 
 {{-- Brand bar --}}
-<div id="brand-bar">CARBONIZED</div>
+{{-- removed --}}
 
 {{-- Main content --}}
 <div class="content">
