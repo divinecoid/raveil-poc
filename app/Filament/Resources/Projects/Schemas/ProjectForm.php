@@ -18,8 +18,44 @@ class ProjectForm
                 Textarea::make('description')
                     ->columnSpanFull(),
                 \Filament\Forms\Components\Select::make('sales_order_id')
-                    ->relationship('salesOrder', 'order_number')
+                    ->relationship('salesOrder', 'order_number', function ($query) {
+                        $query->with(['customer', 'vehicle']);
+                    })
+                    ->getOptionLabelFromRecordUsing(function ($record) {
+                        $customerName = $record->customer?->name ?? '-';
+                        $vehicleModel = $record->vehicle?->model ?? '-';
+                        $licensePlate = $record->vehicle?->license_plate ?? '-';
+                        return "{$record->order_number} ({$customerName} - {$vehicleModel} - {$licensePlate})";
+                    })
                     ->searchable()
+                    ->getSearchResultsUsing(function (\Filament\Forms\Components\Select $component, string $search) {
+                        $relationship = \Illuminate\Database\Eloquent\Relations\Relation::noConstraints(fn () => $component->getRelationship());
+
+                        $query = app(\Filament\Support\Services\RelationshipJoiner::class)->prepareQueryForNoConstraints($relationship);
+
+                        $query->with(['customer', 'vehicle']);
+
+                        $query->where(function ($q) use ($search) {
+                            $q->where('order_number', 'like', "%{$search}%")
+                                ->orWhereHas('customer', function ($q) use ($search) {
+                                    $q->where('name', 'like', "%{$search}%");
+                                })
+                                ->orWhereHas('vehicle', function ($q) use ($search) {
+                                    $q->where('license_plate', 'like', "%{$search}%")
+                                        ->orWhere('model', 'like', "%{$search}%");
+                                });
+                        });
+
+                        return $query->limit(50)
+                            ->get()
+                            ->mapWithKeys(function ($record) {
+                                $customerName = $record->customer?->name ?? '-';
+                                $vehicleModel = $record->vehicle?->model ?? '-';
+                                $licensePlate = $record->vehicle?->license_plate ?? '-';
+                                return [$record->id => "{$record->order_number} ({$customerName} - {$vehicleModel} - {$licensePlate})"];
+                            })
+                            ->toArray();
+                    })
                     ->preload()
                     ->live()
                     ->afterStateUpdated(function ($state, $set) {
