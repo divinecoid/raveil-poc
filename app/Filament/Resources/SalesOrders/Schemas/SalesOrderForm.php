@@ -107,8 +107,20 @@ class SalesOrderForm
                 \Filament\Forms\Components\Repeater::make('items')
                     ->relationship()
                     ->schema([
-                        \Filament\Forms\Components\Select::make('product_id')
-                            ->relationship('product', 'name')
+                        \Filament\Forms\Components\Select::make('product_name')
+                            ->options(function ($get) {
+                                $query = \App\Models\Product::query();
+                                $vehicleId = $get('../../vehicle_id');
+                                if ($vehicleId) {
+                                    $vehicle = \App\Models\Vehicle::find($vehicleId);
+                                    if ($vehicle) {
+                                        $query->whereHas('brand', function ($q) use ($vehicle) {
+                                            $q->whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))]);
+                                        })->whereRaw('LOWER(car_model) = ?', [strtolower(trim($vehicle->model))]);
+                                    }
+                                }
+                                return $query->pluck('name', 'name');
+                            })
                             ->searchable()
                             ->preload()
                             ->required()
@@ -126,32 +138,53 @@ class SalesOrderForm
                                     ->relationship('brand', 'name')
                                     ->searchable()
                                     ->preload(),
+                                \Filament\Forms\Components\TextInput::make('car_model')
+                                    ->label('Car Model')
+                                    ->maxLength(255),
                                 \Filament\Forms\Components\TextInput::make('price')
                                     ->numeric()
                                     ->label('Price'),
                                 \Filament\Forms\Components\Textarea::make('description')
                                     ->columnSpanFull(),
                             ])
-                            ->createOptionUsing(function (array $data) {
+                            ->createOptionUsing(function (array $data, $get) {
                                 $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
                                 $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
-                                return \App\Models\Product::create($data)->getKey();
+                                
+                                $vehicleId = $get('../../vehicle_id');
+                                if ($vehicleId) {
+                                    $vehicle = \App\Models\Vehicle::find($vehicleId);
+                                    if ($vehicle) {
+                                        if (empty($data['brand_id'])) {
+                                            $brand = \App\Models\Brand::whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))])->first();
+                                            if ($brand) {
+                                                $data['brand_id'] = $brand->id;
+                                            }
+                                        }
+                                        if (empty($data['car_model'])) {
+                                            $data['car_model'] = $vehicle->model;
+                                        }
+                                    }
+                                }
+                                $product = \App\Models\Product::create($data);
+                                return $product->name;
                             })
                             ->afterStateUpdated(function ($state, $set) {
                                 if ($state) {
-                                    $product = \App\Models\Product::find($state);
+                                    $product = \App\Models\Product::where('name', $state)->first();
                                     if ($product) {
-                                        $set('product_name', $product->name);
+                                        $set('product_id', $product->id);
                                         $set('unit_price', $product->price ?? 0);
                                         $set('subtotal', $product->price ?? 0);
                                     }
                                 } else {
-                                    $set('product_name', null);
+                                    $set('product_id', null);
                                     $set('unit_price', 0);
                                     $set('subtotal', 0);
                                 }
-                            }),
-                        \Filament\Forms\Components\Hidden::make('product_name'),
+                            })
+                            ->columnSpan(2),
+                        \Filament\Forms\Components\Hidden::make('product_id'),
                         TextInput::make('quantity')
                             ->numeric()
                             ->default(1)
@@ -160,7 +193,8 @@ class SalesOrderForm
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 $unitPrice = (float) $get('unit_price');
                                 $set('subtotal', $state * $unitPrice);
-                            }),
+                            })
+                            ->columnSpan(1),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
@@ -169,11 +203,13 @@ class SalesOrderForm
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 $quantity = (int) $get('quantity');
                                 $set('subtotal', $state * $quantity);
-                            }),
+                            })
+                            ->columnSpan(1),
                         TextInput::make('subtotal')
                             ->numeric()
                             ->default(0)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(1),
                     ])
                     ->columns(5)
                     ->columnSpanFull(),
