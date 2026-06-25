@@ -45,6 +45,32 @@ class InvoicesTable
                         'Cancelled' => 'gray',
                         default => 'primary',
                     })
+                    ->action(
+                        \Filament\Actions\Action::make('updateStatus')
+                            ->schema([
+                                \Filament\Forms\Components\Select::make('status')
+                                    ->options([
+                                        'Unpaid' => 'Unpaid',
+                                        'Paid' => 'Paid',
+                                        'Cancelled' => 'Cancelled',
+                                    ])
+                                    ->required(),
+                            ])
+                            ->requiresConfirmation()
+                            ->modalHeading('Update Status')
+                            ->modalDescription('Are you sure you would like to do this?')
+                            ->modalSubmitActionLabel('Confirm')
+                            ->modalCancelActionLabel('Cancel')
+                            ->fillForm(fn ($record) => ['status' => $record->status])
+                            ->action(function (array $data, $record): void {
+                                $record->update(['status' => $data['status']]);
+
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Status Updated')
+                                    ->success()
+                                    ->send();
+                            })
+                    )
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
