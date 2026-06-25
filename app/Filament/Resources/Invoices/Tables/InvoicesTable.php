@@ -14,6 +14,7 @@ class InvoicesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordUrl(null)
             ->columns([
                 TextColumn::make('invoice_number')
                     ->searchable(),

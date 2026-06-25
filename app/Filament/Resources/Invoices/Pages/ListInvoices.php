@@ -16,4 +16,9 @@ class ListInvoices extends ListRecords
             CreateAction::make(),
         ];
     }
+
+    public function triggerUpdateStatus(int|string $recordKey, string $newStatus): void
+    {
+        $this->mountTableAction('updateStatus', (string) $recordKey, ['newStatus' => $newStatus]);
+    }
 }

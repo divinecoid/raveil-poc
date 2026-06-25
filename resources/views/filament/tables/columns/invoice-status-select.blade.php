@@ -17,9 +17,10 @@
         selectStatus(newStatus) {
             if (newStatus === this.currentStatus) { this.open = false; return; }
             this.open = false;
-            $wire.mountTableAction('updateStatus', @js((string) $key), { newStatus: newStatus });
+            $wire.triggerUpdateStatus(@js((string) $key), newStatus);
         }
     }"
+    x-on:click.stop
     x-on:click.outside="open = false"
     style="position: relative; display: inline-block;"
 >
