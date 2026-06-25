@@ -185,12 +185,12 @@ class SalesOrderForm
                                     ->required()
                                     ->maxLength(255),
                                 \Filament\Forms\Components\Select::make('category_id')
-                                    ->relationship('category', 'name')
+                                    ->options(fn () => \App\Models\Category::pluck('name', 'id')->toArray())
                                     ->searchable()
                                     ->preload()
                                     ->required(),
                                 \Filament\Forms\Components\Select::make('brand_id')
-                                    ->relationship('brand', 'name')
+                                    ->options(fn () => \App\Models\Brand::pluck('name', 'id')->toArray())
                                     ->searchable()
                                     ->preload(),
                                 \Filament\Forms\Components\TextInput::make('car_model')
