@@ -224,8 +224,10 @@
                 <div class="pay-thanks">Thank you for your purchase!</div>
             </td>
             <td style="vertical-align:bottom; text-align:right; width:35%;">
-                <img src="{{ public_path('images/qr-linktree.png') }}" width="80" height="80" alt="QR" style="display:inline-block;">
-                <div class="qr-label">LINKTREE</div>
+                <div style="display: inline-block; text-align: center; width: 80px;">
+                    <img src="{{ public_path('images/qr-linktree.png') }}" width="80" height="80" alt="QR" style="display: block; margin: 0 auto;">
+                    <div class="qr-label">LINKTREE</div>
+                </div>
             </td>
         </tr>
     </table>
