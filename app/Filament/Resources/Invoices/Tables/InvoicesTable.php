@@ -63,12 +63,15 @@ class InvoicesTable
                     ->action(function ($record) {
                         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['invoice' => $record->load('items', 'customer', 'salesOrder')])
                             ->setPaper('a4', 'portrait')
-                            ->setOptions([
-                                'isHtml5ParserEnabled' => true,
-                                'isRemoteEnabled'      => true,
-                                'defaultFont'          => 'DejaVu Sans',
-                                'dpi'                  => 150,
-                            ]);
+                            ->setOptions(array_merge(
+                                config('dompdf.options') ?? [],
+                                [
+                                    'isHtml5ParserEnabled' => true,
+                                    'isRemoteEnabled'      => true,
+                                    'defaultFont'          => 'DejaVu Sans',
+                                    'dpi'                  => 150,
+                                ]
+                            ));
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->stream();
                         }, $record->invoice_number . '.pdf');

@@ -7,17 +7,20 @@
         @font-face {
             font-family: 'Barlow';
             src: url('{{ public_path('fonts/barlow/BarlowCondensed-Regular.ttf') }}') format('truetype');
-            font-weight: 400;
+            font-weight: normal;
+            font-style: normal;
         }
         @font-face {
             font-family: 'Barlow';
             src: url('{{ public_path('fonts/barlow/BarlowCondensed-Bold.ttf') }}') format('truetype');
-            font-weight: 700;
+            font-weight: bold;
+            font-style: normal;
         }
         @font-face {
-            font-family: 'Barlow';
+            font-family: 'Barlow-Black';
             src: url('{{ public_path('fonts/barlow/BarlowCondensed-Black.ttf') }}') format('truetype');
-            font-weight: 900;
+            font-weight: normal;
+            font-style: normal;
         }
 
         /* DomPDF: @page margin-bottom leaves space for the fixed footer */
@@ -49,10 +52,10 @@
         /* ─── WATERMARK ─── */
         #watermark {
             position: fixed;
-            bottom: 80pt;
-            right: -10pt;
-            width: 240pt;
-            opacity: 0.07;
+            bottom: -70pt;
+            left: -70pt;
+            width: 400pt;
+            opacity: 0.04;
             z-index: -1;
         }
 
@@ -64,8 +67,9 @@
 
         /* ─── TITLE ─── */
         .title {
+            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
             font-size: 54pt;
-            font-weight: 900;
+            font-weight: normal;
             letter-spacing: 4pt;
             text-transform: uppercase;
             line-height: 1;
@@ -85,8 +89,9 @@
             letter-spacing: 0.5pt;
         }
         .cust-name {
+            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
             font-size: 13.5pt;
-            font-weight: 900;
+            font-weight: bold;
             letter-spacing: 1.5pt;
             text-transform: uppercase;
             text-align: right;
@@ -146,8 +151,9 @@
 
         /* grand total */
         .g-lbl {
+            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
             font-size: 9.5pt;
-            font-weight: 900;
+            font-weight: bold;
             letter-spacing: 2pt;
             text-transform: uppercase;
             color: #ffffff;
@@ -158,8 +164,9 @@
             padding-top: 8pt;
         }
         .g-val {
+            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
             font-size: 12.5pt;
-            font-weight: 900;
+            font-weight: bold;
             color: #ffffff;
             text-align: right;
             border-top: 0.5pt solid #555555;
@@ -200,10 +207,7 @@
 
 {{-- Watermark --}}
 <div id="watermark">
-    <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M45 15 L185 170 L45 325"  stroke="#ffffff" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M135 15 L275 170 L135 325" stroke="#ffffff" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
+    <img src="{{ public_path('images/logo-carbonized-clean.png') }}" style="width: 100%; height: auto;" alt="Watermark">
 </div>
 
 {{-- Footer payment (fixed, above brand bar) --}}
