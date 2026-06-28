@@ -99,7 +99,7 @@
         .inv-date {
             font-size: 10pt;
             color: #bbbbbb;
-            text-align: center;
+            text-align: right;
             margin-top: 2pt;
         }
 
