@@ -62,7 +62,7 @@
         /* ─── MAIN CONTENT ─── */
         /* bottom padding = footer area height (payment ~70pt + brand 46pt + gap) */
         .content {
-            padding: 44pt 52pt 120pt 52pt;
+            padding: 44pt 52pt 140pt 52pt;
         }
 
         /* ─── TITLE ─── */
@@ -110,7 +110,7 @@
         }
 
         .items thead th {
-            font-size: 8pt;
+            font-size: 9.5pt;
             font-weight: 700;
             letter-spacing: 2pt;
             text-transform: uppercase;
@@ -123,7 +123,7 @@
 
         .items tbody td {
             padding: 8pt 0;
-            font-size: 10.5pt;
+            font-size: 11.5pt;
             font-weight: 400;
             color: #eeeeee;
             border-bottom: 0.5pt solid #2c2c2c;
@@ -133,7 +133,7 @@
 
         /* summary label/value */
         .s-lbl {
-            font-size: 8pt;
+            font-size: 9.5pt;
             font-weight: 700;
             letter-spacing: 2pt;
             text-transform: uppercase;
@@ -143,7 +143,7 @@
             border-bottom: none !important;
         }
         .s-val {
-            font-size: 10.5pt;
+            font-size: 11.5pt;
             color: #cccccc;
             text-align: right;
             border-bottom: none !important;
@@ -152,7 +152,7 @@
         /* grand total */
         .g-lbl {
             font-family: 'Barlow', 'DejaVu Sans', sans-serif;
-            font-size: 9.5pt;
+            font-size: 11pt;
             font-weight: bold;
             letter-spacing: 2pt;
             text-transform: uppercase;
@@ -165,7 +165,7 @@
         }
         .g-val {
             font-family: 'Barlow', 'DejaVu Sans', sans-serif;
-            font-size: 12.5pt;
+            font-size: 14.5pt;
             font-weight: bold;
             color: #ffffff;
             text-align: right;
@@ -181,19 +181,19 @@
 
         /* ─── FOOTER PAYMENT ─── */
         .pay-text {
-            font-size: 8.5pt;
+            font-size: 10pt;
             color: #cccccc;
             line-height: 1.8;
         }
         .pay-text strong { color: #ffffff; font-weight: 700; }
         .pay-thanks {
             margin-top: 8pt;
-            font-size: 8.5pt;
+            font-size: 10pt;
             font-weight: 700;
             color: #ffffff;
         }
         .qr-label {
-            font-size: 7.5pt;
+            font-size: 8.5pt;
             font-weight: 700;
             letter-spacing: 2pt;
             text-transform: uppercase;
@@ -224,7 +224,7 @@
                 <div class="pay-thanks">Thank you for your purchase!</div>
             </td>
             <td style="vertical-align:bottom; text-align:right; width:35%;">
-                <img src="{{ public_path('images/qr-linktree.png') }}" width="70" height="70" alt="QR" style="display:inline-block;">
+                <img src="{{ public_path('images/qr-linktree.png') }}" width="80" height="80" alt="QR" style="display:inline-block;">
                 <div class="qr-label">LINKTREE</div>
             </td>
         </tr>
