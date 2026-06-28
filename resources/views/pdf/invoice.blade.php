@@ -52,9 +52,9 @@
         /* ─── WATERMARK ─── */
         #watermark {
             position: fixed;
-            bottom: -70pt;
-            left: -70pt;
-            width: 400pt;
+            bottom: -110pt;
+            left: -110pt;
+            width: 600pt;
             opacity: 0.04;
             z-index: -1;
         }
