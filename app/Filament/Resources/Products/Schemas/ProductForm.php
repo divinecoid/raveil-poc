@@ -34,6 +34,10 @@ class ProductForm
                 TextInput::make('price')
                     ->numeric()
                     ->prefix('Rp'),
+                TextInput::make('cost_price')
+                    ->label('Harga Modal')
+                    ->numeric()
+                    ->prefix('Rp'),
                 TextInput::make('minimum_stock')
                     ->numeric()
                     ->default(0)
