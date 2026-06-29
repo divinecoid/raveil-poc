@@ -42,7 +42,7 @@ class ListInvoices extends ListRecords
                     ->required()
                     ->directory('payment-proofs'),
             ] : [])
-            ->action(function (array $data): void {
+            ->action(function (array $data, \Livewire\Component $livewire) {
                 if (! $this->pendingStatusRecordKey || ! $this->pendingStatusNewStatus) {
                     return;
                 }
@@ -63,6 +63,8 @@ class ListInvoices extends ListRecords
 
                 $this->pendingStatusRecordKey = null;
                 $this->pendingStatusNewStatus = null;
+
+                $livewire->redirect(static::getResource()::getUrl('index'));
             });
     }
 
