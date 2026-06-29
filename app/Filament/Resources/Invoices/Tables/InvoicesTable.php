@@ -53,8 +53,22 @@ class InvoicesTable
                             ->modalContent(fn ($record) => $record->payment_proof ? new \Illuminate\Support\HtmlString(
                                 '<div style="display: flex; justify-content: center; align-items: center; padding: 10px;"><img src="' . \Illuminate\Support\Facades\Storage::disk('public')->url($record->payment_proof) . '" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);" /></div>'
                             ) : null)
-                            ->modalSubmitAction(false)
+                            ->modalSubmitAction(fn ($action) => $action->label('Hapus Foto')->color('danger')->icon('heroicon-m-trash'))
                             ->modalCancelActionLabel('Tutup')
+                            ->action(function ($record, \Livewire\Component $livewire) {
+                                if ($record->payment_proof) {
+                                    \Illuminate\Support\Facades\Storage::disk('public')->delete($record->payment_proof);
+                                    $record->update(['payment_proof' => null]);
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title('Foto bukti pembayaran berhasil dihapus')
+                                        ->success()
+                                        ->send();
+                                        
+                                    // Refresh the page to update the status dropdown cleanly if needed, though ImageColumn updates natively
+                                    $livewire->redirect(\App\Filament\Resources\Invoices\InvoiceResource::getUrl('index'));
+                                }
+                            })
                     ),
                 TextColumn::make('created_at')
                     ->dateTime()
