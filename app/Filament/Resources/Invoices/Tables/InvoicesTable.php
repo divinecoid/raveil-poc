@@ -45,7 +45,16 @@ class InvoicesTable
                 \Filament\Tables\Columns\ImageColumn::make('payment_proof')
                     ->label('Bukti Pembayaran')
                     ->circular()
-                    ->defaultImageUrl(null),
+                    ->defaultImageUrl(null)
+                    ->action(
+                        \Filament\Actions\Action::make('viewPaymentProof')
+                            ->modalHeading('Bukti Pembayaran')
+                            ->modalContent(fn ($record) => $record->payment_proof ? new \Illuminate\Support\HtmlString(
+                                '<div style="display: flex; justify-content: center; align-items: center; padding: 10px;"><img src="' . asset('storage/' . $record->payment_proof) . '" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);" /></div>'
+                            ) : null)
+                            ->modalSubmitAction(false)
+                            ->modalCancelActionLabel('Tutup')
+                    ),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
