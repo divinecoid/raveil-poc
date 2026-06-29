@@ -70,7 +70,14 @@ class InvoiceForm
                         'Cancelled' => 'Cancelled',
                     ])
                     ->required()
-                    ->default('Unpaid'),
+                    ->default('Unpaid')
+                    ->live(),
+                \Filament\Forms\Components\FileUpload::make('payment_proof')
+                    ->label('Foto Bukti Pembayaran')
+                    ->image()
+                    ->directory('payment-proofs')
+                    ->visible(fn ($get) => $get('status') === 'Paid')
+                    ->required(fn ($get) => $get('status') === 'Paid'),
                 \Filament\Forms\Components\Repeater::make('items')
                     ->relationship()
                     ->live()

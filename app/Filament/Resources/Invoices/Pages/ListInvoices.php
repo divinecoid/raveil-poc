@@ -28,17 +28,32 @@ class ListInvoices extends ListRecords
         return Action::make('confirmUpdateStatus')
             ->requiresConfirmation()
             ->modalHeading('Update Invoice Status')
-            ->modalDescription(fn () => 'Are you sure you want to change the status to "' . $this->pendingStatusNewStatus . '"?')
+            ->modalDescription(fn () => $this->pendingStatusNewStatus === 'Paid' 
+                ? 'Please upload payment proof to change status to "Paid".'
+                : 'Are you sure you want to change the status to "' . $this->pendingStatusNewStatus . '"?')
             ->modalSubmitActionLabel('Confirm')
             ->modalCancelActionLabel('Cancel')
-            ->modalWidth('sm')
-            ->action(function (): void {
+            ->modalWidth('md')
+            ->form(fn () => $this->pendingStatusNewStatus === 'Paid' ? [
+                \Filament\Forms\Components\FileUpload::make('payment_proof')
+                    ->label('Foto Bukti Pembayaran')
+                    ->image()
+                    ->required()
+                    ->directory('payment-proofs'),
+            ] : [])
+            ->action(function (array $data): void {
                 if (! $this->pendingStatusRecordKey || ! $this->pendingStatusNewStatus) {
                     return;
                 }
 
                 $invoice = Invoice::find($this->pendingStatusRecordKey);
-                $invoice?->update(['status' => $this->pendingStatusNewStatus]);
+                
+                $updateData = ['status' => $this->pendingStatusNewStatus];
+                if ($this->pendingStatusNewStatus === 'Paid') {
+                    $updateData['payment_proof'] = $data['payment_proof'] ?? null;
+                }
+                
+                $invoice?->update($updateData);
 
                 \Filament\Notifications\Notification::make()
                     ->title('Status updated to ' . $this->pendingStatusNewStatus)

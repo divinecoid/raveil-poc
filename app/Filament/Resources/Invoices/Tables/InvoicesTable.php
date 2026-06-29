@@ -42,6 +42,10 @@ class InvoicesTable
                 ViewColumn::make('status')
                     ->view('filament.tables.columns.invoice-status-select')
                     ->searchable(),
+                \Filament\Tables\Columns\ImageColumn::make('payment_proof')
+                    ->label('Bukti Pembayaran')
+                    ->circular()
+                    ->defaultImageUrl(null),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
