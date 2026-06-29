@@ -75,6 +75,7 @@ class InvoiceForm
                 \Filament\Forms\Components\FileUpload::make('payment_proof')
                     ->label('Foto Bukti Pembayaran')
                     ->image()
+                    ->disk('public')
                     ->directory('payment-proofs')
                     ->visible(fn ($get) => $get('status') === 'Paid')
                     ->required(fn ($get) => $get('status') === 'Paid'),

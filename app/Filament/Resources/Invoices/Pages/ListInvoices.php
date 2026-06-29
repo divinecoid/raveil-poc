@@ -38,6 +38,7 @@ class ListInvoices extends ListRecords
                 \Filament\Forms\Components\FileUpload::make('payment_proof')
                     ->label('Foto Bukti Pembayaran')
                     ->image()
+                    ->disk('public')
                     ->required()
                     ->directory('payment-proofs'),
             ] : [])
