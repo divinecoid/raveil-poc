@@ -13,7 +13,7 @@ class InvoiceForm
         $items = $get('items') ?? [];
         $subtotal = 0;
         foreach ($items as $uuid => $item) {
-            $quantity = floatval($item['quantity'] ?? 0);
+            $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? floatval($item['quantity']) : 1;
             $unitPrice = floatval($item['unit_price'] ?? 0);
             $itemSubtotal = $quantity * $unitPrice;
             $set("items.{$uuid}.subtotal", $itemSubtotal);
@@ -85,12 +85,24 @@ class InvoiceForm
                             ->default(1)
                             ->required()
                             ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
+                            })
                             ->columnSpan(1),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
                             ->required()
                             ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
+                            })
                             ->columnSpan(1),
                         TextInput::make('subtotal')
                             ->numeric()

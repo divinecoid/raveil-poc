@@ -16,7 +16,7 @@ class SalesOrderForm
         $total = 0;
         
         foreach ($items as $uuid => $item) {
-            $quantity = floatval($item['quantity'] ?? 0);
+            $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? floatval($item['quantity']) : 1;
             $unitPrice = floatval($item['unit_price'] ?? 0);
             $subtotal = $quantity * $unitPrice;
             $set("items.{$uuid}.subtotal", $subtotal);
@@ -24,7 +24,7 @@ class SalesOrderForm
         }
         
         foreach ($services as $uuid => $service) {
-            $quantity = floatval($service['quantity'] ?? 0);
+            $quantity = isset($service['quantity']) && $service['quantity'] !== '' ? floatval($service['quantity']) : 1;
             $unitPrice = floatval($service['unit_price'] ?? 0);
             $subtotal = $quantity * $unitPrice;
             $set("services.{$uuid}.subtotal", $subtotal);
@@ -256,7 +256,7 @@ class SalesOrderForm
                                 $product = \App\Models\Product::create($data);
                                 return $product->name;
                             })
-                            ->afterStateUpdated(function ($state, $set) {
+                            ->afterStateUpdated(function ($state, $set, $get) {
                                 if ($state) {
                                     $product = \App\Models\Product::where('name', $state)->first();
                                     if ($product) {
@@ -267,6 +267,10 @@ class SalesOrderForm
                                     $set('product_id', null);
                                     $set('unit_price', 0);
                                 }
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
                             })
                             ->columnSpan(2),
                         \Filament\Forms\Components\Hidden::make('product_id'),
@@ -275,12 +279,24 @@ class SalesOrderForm
                             ->default(1)
                             ->required()
                             ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
+                            })
                             ->columnSpan(1),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
                             ->required()
                             ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
+                            })
                             ->columnSpan(1),
                         TextInput::make('subtotal')
                             ->numeric()
@@ -306,12 +322,24 @@ class SalesOrderForm
                             ->numeric()
                             ->default(1)
                             ->required()
-                            ->live(),
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
+                            }),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
                             ->required()
-                            ->live(),
+                            ->live()
+                            ->afterStateUpdated(function ($state, $set, $get) {
+                                self::updateTotals(
+                                    fn ($path) => $get("../../{$path}"),
+                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                );
+                            }),
                         TextInput::make('subtotal')
                             ->numeric()
                             ->default(0)
