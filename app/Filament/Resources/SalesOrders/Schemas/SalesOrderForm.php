@@ -8,6 +8,32 @@ use Filament\Schemas\Schema;
 
 class SalesOrderForm
 {
+    public static function updateTotals($get, $set): void
+    {
+        $items = $get('items') ?? [];
+        $services = $get('services') ?? [];
+        
+        $total = 0;
+        
+        foreach ($items as $uuid => $item) {
+            $quantity = floatval($item['quantity'] ?? 0);
+            $unitPrice = floatval($item['unit_price'] ?? 0);
+            $subtotal = $quantity * $unitPrice;
+            $set("items.{$uuid}.subtotal", $subtotal);
+            $total += $subtotal;
+        }
+        
+        foreach ($services as $uuid => $service) {
+            $quantity = floatval($service['quantity'] ?? 0);
+            $unitPrice = floatval($service['unit_price'] ?? 0);
+            $subtotal = $quantity * $unitPrice;
+            $set("services.{$uuid}.subtotal", $subtotal);
+            $total += $subtotal;
+        }
+        
+        $set('total_amount', $total);
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -153,14 +179,20 @@ class SalesOrderForm
                     ])
                     ->required()
                     ->default('Pending'),
-                TextInput::make('total_amount')
+                  TextInput::make('total_amount')
                     ->required()
                     ->numeric()
-                    ->default(0.0),
+                    ->default(0.0)
+                    ->readOnly()
+                    ->dehydrated(),
                 Textarea::make('notes')
                     ->columnSpanFull(),
                 \Filament\Forms\Components\Repeater::make('items')
                     ->relationship()
+                    ->live()
+                    ->afterStateUpdated(function ($get, $set) {
+                        self::updateTotals($get, $set);
+                    })
                     ->schema([
                         \Filament\Forms\Components\Select::make('product_name')
                             ->options(function ($get) {
@@ -230,12 +262,10 @@ class SalesOrderForm
                                     if ($product) {
                                         $set('product_id', $product->id);
                                         $set('unit_price', $product->price ?? 0);
-                                        $set('subtotal', $product->price ?? 0);
                                     }
                                 } else {
                                     $set('product_id', null);
                                     $set('unit_price', 0);
-                                    $set('subtotal', 0);
                                 }
                             })
                             ->columnSpan(2),
@@ -245,31 +275,29 @@ class SalesOrderForm
                             ->default(1)
                             ->required()
                             ->live()
-                            ->afterStateUpdated(function ($state, $set, $get) {
-                                $unitPrice = (float) $get('unit_price');
-                                $set('subtotal', $state * $unitPrice);
-                            })
                             ->columnSpan(1),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
                             ->required()
                             ->live()
-                            ->afterStateUpdated(function ($state, $set, $get) {
-                                $quantity = (int) $get('quantity');
-                                $set('subtotal', $state * $quantity);
-                            })
                             ->columnSpan(1),
                         TextInput::make('subtotal')
                             ->numeric()
                             ->default(0)
                             ->required()
+                            ->readOnly()
+                            ->dehydrated()
                             ->columnSpan(1),
                     ])
                     ->columns(5)
                     ->columnSpanFull(),
                 \Filament\Forms\Components\Repeater::make('services')
                     ->relationship()
+                    ->live()
+                    ->afterStateUpdated(function ($get, $set) {
+                        self::updateTotals($get, $set);
+                    })
                     ->schema([
                         TextInput::make('service_name')
                             ->required()
@@ -277,15 +305,19 @@ class SalesOrderForm
                         TextInput::make('quantity')
                             ->numeric()
                             ->default(1)
-                            ->required(),
+                            ->required()
+                            ->live(),
                         TextInput::make('unit_price')
                             ->numeric()
                             ->default(0)
-                            ->required(),
+                            ->required()
+                            ->live(),
                         TextInput::make('subtotal')
                             ->numeric()
                             ->default(0)
-                            ->required(),
+                            ->required()
+                            ->readOnly()
+                            ->dehydrated(),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),

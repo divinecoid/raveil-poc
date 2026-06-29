@@ -81,18 +81,28 @@ class SalesOrdersTable
                     ->color('info')
                     ->visible(fn ($record) => $record->invoices()->count() === 0)
                     ->action(function ($record) {
+                        $subtotal = 0;
+                        foreach ($record->items as $item) {
+                            $subtotal += floatval($item->subtotal);
+                        }
+                        foreach ($record->services as $service) {
+                            $subtotal += floatval($service->subtotal);
+                        }
+
                         $invoice = \App\Models\Invoice::create([
                             'invoice_number' => \App\Models\Invoice::generateInvoiceNumber(),
+                            'company_id' => $record->company_id,
                             'sales_order_id' => $record->id,
                             'customer_id' => $record->customer_id,
                             'issue_date' => now(),
-                            'subtotal' => $record->total_amount,
-                            'total' => $record->total_amount,
+                            'subtotal' => $subtotal,
+                            'total' => $subtotal,
                             'status' => 'Unpaid',
                         ]);
                         foreach ($record->items as $item) {
                             \App\Models\InvoiceItem::create([
                                 'invoice_id' => $invoice->id,
+                                'company_id' => $record->company_id,
                                 'type' => 'product',
                                 'description' => $item->product_name ?? ($item->product ? $item->product->name : 'Item'),
                                 'quantity' => $item->quantity,
@@ -103,6 +113,7 @@ class SalesOrdersTable
                         foreach ($record->services as $service) {
                             \App\Models\InvoiceItem::create([
                                 'invoice_id' => $invoice->id,
+                                'company_id' => $record->company_id,
                                 'type' => 'service',
                                 'description' => $service->service_name,
                                 'quantity' => $service->quantity,
