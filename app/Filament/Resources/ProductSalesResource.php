@@ -31,17 +31,17 @@ class ProductSalesResource extends Resource
                     ->label('Nama Produk')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('cost_price')
-                    ->label('Harga Modal')
-                    ->money('IDR', locale: 'id')
-                    ->sortable(),
-                TextColumn::make('price')
-                    ->label('Harga Jual')
-                    ->money('IDR', locale: 'id')
-                    ->sortable(),
                 TextColumn::make('total_sold')
                     ->label('Qty Terjual')
                     ->numeric()
+                    ->sortable(),
+                TextColumn::make('cost_price')
+                    ->label('Harga Modal Satuan')
+                    ->money('IDR', locale: 'id')
+                    ->sortable(),
+                TextColumn::make('price')
+                    ->label('Harga Jual Satuan')
+                    ->money('IDR', locale: 'id')
                     ->sortable(),
                 TextColumn::make('total_revenue')
                     ->label('Total Omset')
