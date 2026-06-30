@@ -197,14 +197,14 @@
             font-family: 'Inter', sans-serif;
             font-size: 11pt;
             color: #cccccc;
-            line-height: 1.8;
+            line-height: 1.4;
         }
-        .pay-text strong { color: #ffffff; font-weight: 700; }
+        .pay-text strong { color: #ffffff; font-weight: bold; }
         .pay-thanks {
             font-family: 'Inter', sans-serif;
-            margin-top: 8pt;
+            margin-top: 16pt;
             font-size: 11pt;
-            font-weight: 700;
+            font-weight: bold;
             color: #ffffff;
         }
         .qr-label {
