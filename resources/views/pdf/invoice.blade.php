@@ -202,15 +202,7 @@
             font-weight: bold;
             color: #ffffff;
         }
-        .qr-label {
-            font-size: 8.5pt;
-            font-weight: 700;
-            letter-spacing: 2pt;
-            text-transform: uppercase;
-            color: #aaaaaa;
-            margin-top: 3pt;
-            text-align: center;
-        }
+
     </style>
 </head>
 <body>
@@ -304,7 +296,7 @@
     <div id="footer-payment">
         <table width="100%" style="border-collapse:collapse;">
             <tr>
-                <td style="vertical-align:bottom; width:65%;">
+                <td style="vertical-align:top; width:65%;">
                     <div class="pay-text">
                         Please make payment to the following account:<br>
                         <strong>Bank Name:</strong> Bank Central Asia (BCA)<br>
@@ -313,10 +305,9 @@
                     </div>
                     <div class="pay-thanks">Thank you for your purchase!</div>
                 </td>
-                <td style="vertical-align:bottom; text-align:right; width:35%;">
-                    <div style="display: inline-block; text-align: center; width: 80px;">
-                        <img src="{{ public_path('images/qr-linktree.png') }}" width="80" height="80" alt="QR" style="display: block; margin: 0 auto;">
-                        <div class="qr-label">LINKTREE</div>
+                <td style="vertical-align:top; text-align:right; width:35%;">
+                    <div style="display: inline-block; text-align: center; width: 200px;">
+                        <img src="{{ public_path('images/qr-linktree.png') }}" style="width: 100%; height: auto; display: block; margin: 0 auto;" alt="QR">
                     </div>
                 </td>
             </tr>
