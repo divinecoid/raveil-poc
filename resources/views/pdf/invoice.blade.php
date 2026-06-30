@@ -16,6 +16,12 @@
             font-weight: normal;
             font-style: normal;
         }
+        @font-face {
+            font-family: 'Inter';
+            src: url('{{ public_path('fonts/inter/Inter-Bold.ttf') }}') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
         /* DomPDF: @page margin-bottom leaves space for the fixed footer */
         @page {
             margin: 0;
@@ -109,17 +115,18 @@
             text-transform: uppercase;
             color: #ffffff;
             padding-bottom: 6pt;
-            border-bottom: 0.5pt solid #444444;
+            border-bottom: 0.5pt solid #ffffff;
             text-align: left;
         }
         .items thead th.r { text-align: right; }
+        .items thead th.c { text-align: center; }
 
         .items tbody td {
             padding: 8pt 0;
             font-size: 11.5pt;
             font-weight: 400;
             color: #eeeeee;
-            border-bottom: 0.5pt solid #2c2c2c;
+            border-bottom: 0.5pt solid #ffffff;
         }
         .items tbody td.col-item {
             text-transform: capitalize;
@@ -128,6 +135,11 @@
             font-family: 'Inter', sans-serif;
             font-size: 11pt;
             text-align: right; 
+        }
+        .items tbody td.c {
+            font-family: 'Inter', sans-serif;
+            font-size: 11pt;
+            text-align: center;
         }
         .items tbody td.nr { border-bottom: none; }
 
@@ -159,9 +171,10 @@
             color: #ffffff;
             text-align: right;
             padding-right: 14pt;
-            border-top: 0.5pt solid #555555;
+            border-top: 0.5pt solid #ffffff;
             border-bottom: none !important;
             padding-top: 8pt;
+            white-space: nowrap;
         }
         .g-val {
             font-family: 'Inter', sans-serif;
@@ -169,7 +182,7 @@
             font-weight: bold;
             color: #ffffff;
             text-align: right;
-            border-top: 0.5pt solid #555555;
+            border-top: 0.5pt solid #ffffff;
             border-bottom: none !important;
             padding-top: 8pt;
         }
@@ -263,7 +276,7 @@
         <thead>
             <tr>
                 <th class="col-item">Item</th>
-                <th class="col-qty r">QTY</th>
+                <th class="col-qty c">QTY</th>
                 <th class="col-price r">Unit Price</th>
                 <th class="col-total r">Total</th>
             </tr>
@@ -272,7 +285,7 @@
             @forelse ($allItems as $item)
             <tr>
                 <td class="col-item">{{ $item->description }}</td>
-                <td class="col-qty r">{{ $item->quantity }}</td>
+                <td class="col-qty c">{{ $item->quantity }}</td>
                 <td class="col-price r">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
                 <td class="col-total r">Rp {{ number_format($item->subtotal ?? $item->unit_price * $item->quantity, 0, ',', '.') }}</td>
             </tr>
