@@ -38,8 +38,10 @@
         }
 
         #footer-payment {
-            margin-top: 12pt;
-            width: 100%;
+            position: fixed;
+            bottom: 130pt;
+            left: 32pt;
+            right: 32pt;
         }
 
 
@@ -54,9 +56,18 @@
             z-index: -1;
         }
 
+        /* ─── BRAND BAR (FIXED BOTTOM) ─── */
+        #brand-bar {
+            position: fixed;
+            bottom: 16pt;
+            left: 0;
+            right: 0;
+            text-align: center;
+        }
+
         /* ─── MAIN CONTENT ─── */
         .content {
-            padding: 28pt 32pt 32pt 32pt;
+            padding: 28pt 32pt 260pt 32pt;
         }
 
         /* ─── TITLE ─── */
@@ -212,6 +223,33 @@
     <img src="{{ public_path('images/logo-carbonized-clean.png') }}" style="width: 100%; height: auto;" alt="Watermark">
 </div>
 
+{{-- Brand bar (fixed bottom) --}}
+<div id="brand-bar">
+    <img src="{{ public_path('images/logo-bottom.png') }}" style="width: 65%; height: auto; display: inline-block;" alt="Raveil Logo">
+</div>
+
+{{-- Footer payment (fixed above brand bar) --}}
+<div id="footer-payment">
+    <table width="100%" style="border-collapse:collapse;">
+        <tr>
+            <td style="vertical-align:top; width:65%;">
+                <div class="pay-text">
+                    Please make payment to the following account:<br>
+                    <strong>Bank Name:</strong> Bank Central Asia (BCA)<br>
+                    <strong>Account Name:</strong> William Neilson Likamto<br>
+                    <strong>Account Number:</strong> 6042123672
+                </div>
+                <div class="pay-thanks">Thank you for your purchase!</div>
+            </td>
+            <td style="vertical-align:top; text-align:right; width:35%;">
+                <div style="display: inline-block; text-align: center; width: 200px;">
+                    <img src="{{ public_path('images/qr-linktree.png') }}" style="width: 100%; height: auto; display: block; margin: 0 auto;" alt="QR">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
 
 {{-- removed --}}
 
@@ -292,27 +330,6 @@
             </tr>
         </tbody>
     </table>
-
-    <div id="footer-payment">
-        <table width="100%" style="border-collapse:collapse;">
-            <tr>
-                <td style="vertical-align:top; width:65%;">
-                    <div class="pay-text">
-                        Please make payment to the following account:<br>
-                        <strong>Bank Name:</strong> Bank Central Asia (BCA)<br>
-                        <strong>Account Name:</strong> William Neilson Likamto<br>
-                        <strong>Account Number:</strong> 6042123672
-                    </div>
-                    <div class="pay-thanks">Thank you for your purchase!</div>
-                </td>
-                <td style="vertical-align:top; text-align:right; width:35%;">
-                    <div style="display: inline-block; text-align: center; width: 200px;">
-                        <img src="{{ public_path('images/qr-linktree.png') }}" style="width: 100%; height: auto; display: block; margin: 0 auto;" alt="QR">
-                    </div>
-                </td>
-            </tr>
-        </table>
-    </div>
 
 </div>{{-- .content --}}
 
