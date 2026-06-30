@@ -10,18 +10,7 @@
             font-weight: normal;
             font-style: normal;
         }
-        @font-face {
-            font-family: 'Inter';
-            src: url('{{ public_path('fonts/inter/Inter.ttf') }}') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Inter';
-            src: url('{{ public_path('fonts/inter/Inter-Bold.ttf') }}') format('truetype');
-            font-weight: bold;
-            font-style: normal;
-        }
+
         /* DomPDF: @page margin-bottom leaves space for the fixed footer */
         @page {
             margin: 0;
@@ -32,7 +21,7 @@
         html, body {
             background-color: #1c1c1c;
             color: #ffffff;
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 11pt;
             width: 100%;
         }
@@ -138,12 +127,12 @@
             text-transform: capitalize;
         }
         .items tbody td.r { 
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 11pt;
             text-align: right; 
         }
         .items tbody td.c {
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 11pt;
             text-align: center;
         }
@@ -161,7 +150,7 @@
             border-bottom: none !important;
         }
         .s-val {
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 11pt;
             color: #cccccc;
             text-align: right;
@@ -183,7 +172,7 @@
             white-space: nowrap;
         }
         .g-val {
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 11pt;
             font-weight: bold;
             color: #ffffff;
@@ -200,14 +189,14 @@
 
         /* ─── FOOTER PAYMENT ─── */
         .pay-text {
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             font-size: 11pt;
             color: #cccccc;
             line-height: 1.4;
         }
         .pay-text strong { color: #ffffff; font-weight: bold; }
         .pay-thanks {
-            font-family: 'Inter', Helvetica, sans-serif;
+            font-family: Helvetica, sans-serif;
             margin-top: 16pt;
             font-size: 11pt;
             font-weight: bold;
