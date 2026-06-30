@@ -66,13 +66,11 @@
 
         /* ─── TITLE ─── */
         .title {
-            font-family: 'HK Modular', sans-serif;
-            font-size: 44.4pt;
-            font-weight: normal;
-            letter-spacing: 4pt;
-            text-transform: uppercase;
-            line-height: 1;
             margin-bottom: 6pt;
+        }
+        .title img {
+            height: 40pt;
+            display: block;
         }
 
         /* ─── META ROW ─── */
@@ -84,7 +82,7 @@
         .meta td { padding: 0; vertical-align: top; }
         .inv-num {
             font-family: 'Michroma', sans-serif;
-            font-size: 14pt;
+            font-size: 12pt;
             letter-spacing: 0.5pt;
         }
         .cust-name {
@@ -94,11 +92,13 @@
             text-transform: uppercase;
             text-align: right;
         }
-        .inv-date {
-            font-size: 10pt;
-            color: #bbbbbb;
+        .vehicle-info {
+            font-family: 'Michroma', sans-serif;
+            font-size: 12pt;
+            letter-spacing: 1.5pt;
+            text-transform: uppercase;
             text-align: right;
-            margin-top: 2pt;
+            margin-top: 6pt;
         }
 
         /* ─── ITEMS TABLE ─── */
@@ -254,7 +254,9 @@
 {{-- Main content --}}
 <div class="content">
 
-    <div class="title">INVOICE</div>
+    <div class="title">
+        <img src="{{ public_path('images/invoice-title.png') }}" alt="INVOICE">
+    </div>
 
     <table class="meta">
         <tr>
@@ -263,8 +265,8 @@
             </td>
             <td style="width:50%;">
                 <div class="cust-name">{{ strtoupper($invoice->customer?->name ?? 'N/A') }}</div>
-                <div class="inv-date">
-                    {{ $invoice->issue_date ? \Carbon\Carbon::parse($invoice->issue_date)->format('m/Y') : '' }}
+                <div class="vehicle-info">
+                    {{ strtoupper($invoice->salesOrder?->vehicle?->license_plate ?? '') }}
                 </div>
             </td>
         </tr>
