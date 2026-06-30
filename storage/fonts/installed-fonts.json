@@ -5,5 +5,12 @@
     },
     "barlow-black": {
         "normal": "barlow_black_normal_bab07667563881310b78430cd73a570a"
+    },
+    "inter": {
+        "normal": "\/Users\/nicholastantra\/Documents\/Projects\/RAVEIL\/raveil-catalog\/carbonized\/storage\/fonts\/inter_normal_5a66f8ceb794f00a7f54c797a21283b3",
+        "bold": "inter_bold_02384cdf43e3d24b76c57c66dfd114bf"
+    },
+    "michroma": {
+        "normal": "michroma_normal_a558caa4996d34701eea3485a176b848"
     }
 }

@@ -3,26 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>Invoice {{ $invoice->invoice_number }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Michroma&display=swap" rel="stylesheet">
     <style>
-        @font-face {
-            font-family: 'Barlow';
-            src: url('{{ public_path('fonts/barlow/BarlowCondensed-Regular.ttf') }}') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Barlow';
-            src: url('{{ public_path('fonts/barlow/BarlowCondensed-Bold.ttf') }}') format('truetype');
-            font-weight: bold;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Barlow-Black';
-            src: url('{{ public_path('fonts/barlow/BarlowCondensed-Black.ttf') }}') format('truetype');
-            font-weight: normal;
-            font-style: normal;
-        }
-
         /* DomPDF: @page margin-bottom leaves space for the fixed footer */
         @page {
             margin: 0;
@@ -33,7 +15,7 @@
         html, body {
             background-color: #1c1c1c;
             color: #ffffff;
-            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 11pt;
             width: 100%;
         }
@@ -67,8 +49,8 @@
 
         /* ─── TITLE ─── */
         .title {
-            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
-            font-size: 54pt;
+            font-family: 'HK Modular', sans-serif;
+            font-size: 44.4pt;
             font-weight: normal;
             letter-spacing: 4pt;
             text-transform: uppercase;
@@ -84,14 +66,13 @@
         }
         .meta td { padding: 0; vertical-align: top; }
         .inv-num {
-            font-size: 11.5pt;
-            font-weight: 700;
+            font-family: 'Michroma', sans-serif;
+            font-size: 14pt;
             letter-spacing: 0.5pt;
         }
         .cust-name {
-            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
-            font-size: 13.5pt;
-            font-weight: bold;
+            font-family: 'Michroma', sans-serif;
+            font-size: 14pt;
             letter-spacing: 1.5pt;
             text-transform: uppercase;
             text-align: right;
@@ -110,11 +91,11 @@
         }
 
         .items thead th {
-            font-size: 9.5pt;
-            font-weight: 700;
+            font-family: 'Michroma', sans-serif;
+            font-size: 11pt;
             letter-spacing: 2pt;
             text-transform: uppercase;
-            color: #888888;
+            color: #ffffff;
             padding-bottom: 6pt;
             border-bottom: 0.5pt solid #444444;
             text-align: left;
@@ -128,13 +109,20 @@
             color: #eeeeee;
             border-bottom: 0.5pt solid #2c2c2c;
         }
-        .items tbody td.r { text-align: right; }
+        .items tbody td.col-item {
+            text-transform: capitalize;
+        }
+        .items tbody td.r { 
+            font-family: 'Inter', sans-serif;
+            font-size: 11pt;
+            text-align: right; 
+        }
         .items tbody td.nr { border-bottom: none; }
 
         /* summary label/value */
         .s-lbl {
-            font-size: 9.5pt;
-            font-weight: 700;
+            font-family: 'Michroma', sans-serif;
+            font-size: 11pt;
             letter-spacing: 2pt;
             text-transform: uppercase;
             color: #888888;
@@ -143,7 +131,8 @@
             border-bottom: none !important;
         }
         .s-val {
-            font-size: 11.5pt;
+            font-family: 'Inter', sans-serif;
+            font-size: 11pt;
             color: #cccccc;
             text-align: right;
             border-bottom: none !important;
@@ -151,9 +140,8 @@
 
         /* grand total */
         .g-lbl {
-            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
+            font-family: 'Michroma', sans-serif;
             font-size: 11pt;
-            font-weight: bold;
             letter-spacing: 2pt;
             text-transform: uppercase;
             color: #ffffff;
@@ -164,8 +152,8 @@
             padding-top: 8pt;
         }
         .g-val {
-            font-family: 'Barlow', 'DejaVu Sans', sans-serif;
-            font-size: 14.5pt;
+            font-family: 'Inter', sans-serif;
+            font-size: 11pt;
             font-weight: bold;
             color: #ffffff;
             text-align: right;
@@ -181,14 +169,16 @@
 
         /* ─── FOOTER PAYMENT ─── */
         .pay-text {
-            font-size: 10pt;
+            font-family: 'Inter', sans-serif;
+            font-size: 11pt;
             color: #cccccc;
             line-height: 1.8;
         }
         .pay-text strong { color: #ffffff; font-weight: 700; }
         .pay-thanks {
+            font-family: 'Inter', sans-serif;
             margin-top: 8pt;
-            font-size: 10pt;
+            font-size: 11pt;
             font-weight: 700;
             color: #ffffff;
         }
