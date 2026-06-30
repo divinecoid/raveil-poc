@@ -3,8 +3,19 @@
 <head>
     <meta charset="utf-8">
     <title>Invoice {{ $invoice->invoice_number }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Michroma&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: 'Michroma';
+            src: url('{{ public_path('fonts/michroma/Michroma-Regular.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Inter';
+            src: url('{{ public_path('fonts/inter/Inter.ttf') }}') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
         /* DomPDF: @page margin-bottom leaves space for the fixed footer */
         @page {
             margin: 0;
@@ -93,6 +104,7 @@
         .items thead th {
             font-family: 'Michroma', sans-serif;
             font-size: 11pt;
+            font-weight: normal;
             letter-spacing: 2pt;
             text-transform: uppercase;
             color: #ffffff;
