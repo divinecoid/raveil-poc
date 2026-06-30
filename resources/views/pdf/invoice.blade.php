@@ -32,7 +32,7 @@
         html, body {
             background-color: #1c1c1c;
             color: #ffffff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             font-size: 11pt;
             width: 100%;
         }
@@ -87,19 +87,19 @@
         }
         .meta td { padding: 0; vertical-align: top; }
         .inv-num {
-            font-family: 'Michroma', sans-serif;
+            font-family: 'Michroma', Helvetica, sans-serif;
             font-size: 12pt;
             letter-spacing: 0.5pt;
         }
         .cust-name {
-            font-family: 'Michroma', sans-serif;
+            font-family: 'Michroma', Helvetica, sans-serif;
             font-size: 14pt;
             letter-spacing: 1.5pt;
             text-transform: uppercase;
             text-align: right;
         }
         .vehicle-info {
-            font-family: 'Michroma', sans-serif;
+            font-family: 'Michroma', Helvetica, sans-serif;
             font-size: 12pt;
             letter-spacing: 1.5pt;
             text-transform: uppercase;
@@ -114,7 +114,7 @@
         }
 
         .items thead th {
-            font-family: 'Michroma', sans-serif;
+            font-family: 'Michroma', Helvetica, sans-serif;
             font-size: 11pt;
             font-weight: normal;
             letter-spacing: 2pt;
@@ -138,12 +138,12 @@
             text-transform: capitalize;
         }
         .items tbody td.r { 
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             font-size: 11pt;
             text-align: right; 
         }
         .items tbody td.c {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             font-size: 11pt;
             text-align: center;
         }
@@ -151,7 +151,7 @@
 
         /* summary label/value */
         .s-lbl {
-            font-family: 'Michroma', sans-serif;
+            font-family: 'Michroma', Helvetica, sans-serif;
             font-size: 11pt;
             letter-spacing: 2pt;
             text-transform: uppercase;
@@ -161,7 +161,7 @@
             border-bottom: none !important;
         }
         .s-val {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             font-size: 11pt;
             color: #cccccc;
             text-align: right;
@@ -170,7 +170,7 @@
 
         /* grand total */
         .g-lbl {
-            font-family: 'Michroma', sans-serif;
+            font-family: 'Michroma', Helvetica, sans-serif;
             font-size: 11pt;
             letter-spacing: 2pt;
             text-transform: uppercase;
@@ -183,7 +183,7 @@
             white-space: nowrap;
         }
         .g-val {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             font-size: 11pt;
             font-weight: bold;
             color: #ffffff;
@@ -200,14 +200,14 @@
 
         /* ─── FOOTER PAYMENT ─── */
         .pay-text {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             font-size: 11pt;
             color: #cccccc;
             line-height: 1.4;
         }
         .pay-text strong { color: #ffffff; font-weight: bold; }
         .pay-thanks {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', Helvetica, sans-serif;
             margin-top: 16pt;
             font-size: 11pt;
             font-weight: bold;
