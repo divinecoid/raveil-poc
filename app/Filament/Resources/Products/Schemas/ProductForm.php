@@ -34,6 +34,10 @@ class ProductForm
                 TextInput::make('price')
                     ->numeric()
                     ->prefix('Rp'),
+                TextInput::make('price_usd')
+                    ->label('Price (USD)')
+                    ->numeric()
+                    ->prefix('$'),
                 TextInput::make('cost_price')
                     ->label('Harga Modal')
                     ->numeric()

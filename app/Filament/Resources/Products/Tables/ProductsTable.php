@@ -32,6 +32,10 @@ class ProductsTable
                 TextColumn::make('price')
                     ->money('IDR', locale: 'id')
                     ->sortable(),
+                TextColumn::make('price_usd')
+                    ->label('Price (USD)')
+                    ->money('USD')
+                    ->sortable(),
                 TextColumn::make('cost_price')
                     ->label('Harga Modal')
                     ->money('IDR', locale: 'id')

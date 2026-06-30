@@ -1436,8 +1436,8 @@
                     'id' => $p->id,
                     'name' => $p->name,
                     'description' => $p->description ?? 'No description available.',
-                    'price' => $p->price,
-                    'formatted_price' => $p->price ? 'From Rp ' . number_format($p->price, 0, ',', '.') : 'Price on Request',
+                    'price' => $p->price_usd,
+                    'formatted_price' => $p->price_usd ? 'From $ ' . number_format($p->price_usd, 2, '.', ',') : 'Price on Request',
                     'image' => $p->image ? \Storage::url($p->image) : null,
                     'brand_id' => $p->brand_id,
                     'brand_name' => $p->brand ? $p->brand->name : 'Raveil Custom',
@@ -1533,8 +1533,8 @@
                                 <div class="product-overlay-content">
                                     <h3 class="product-name">{{ $product->name }}</h3>
                                     <span class="product-price">
-                                        @if($product->price)
-                                            From Rp {{ number_format($product->price, 0, ',', '.') }}
+                                        @if($product->price_usd)
+                                            From $ {{ number_format($product->price_usd, 2, '.', ',') }}
                                         @else
                                             Price on Request
                                         @endif
@@ -1585,7 +1585,7 @@
 
                     <div class="modal-price-box">
                         <span class="modal-price-label">Price</span>
-                        <span id="modal-product-price" class="modal-price-value">From Rp 85.000.000</span>
+                        <span id="modal-product-price" class="modal-price-value">From $ 85,000.00</span>
                     </div>
 
                     <div class="modal-actions">
