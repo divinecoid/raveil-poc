@@ -37,13 +37,9 @@
             width: 100%;
         }
 
-        /* ─── FIXED FOOTER (DomPDF renders fixed elements on every page) ─── */
-        /* We only want one page so this is fine */
         #footer-payment {
-            position: fixed;
-            bottom: 32pt;
-            left: 32pt;
-            right: 32pt;
+            margin-top: 12pt;
+            width: 100%;
         }
 
 
@@ -59,9 +55,8 @@
         }
 
         /* ─── MAIN CONTENT ─── */
-        /* bottom padding = footer area height (payment ~70pt + brand 46pt + gap) */
         .content {
-            padding: 28pt 32pt 140pt 32pt;
+            padding: 28pt 32pt 32pt 32pt;
         }
 
         /* ─── TITLE ─── */
@@ -225,30 +220,7 @@
     <img src="{{ public_path('images/logo-carbonized-clean.png') }}" style="width: 100%; height: auto;" alt="Watermark">
 </div>
 
-{{-- Footer payment (fixed, above brand bar) --}}
-<div id="footer-payment">
-    <table width="100%" style="border-collapse:collapse;">
-        <tr>
-            <td style="vertical-align:bottom; width:65%;">
-                <div class="pay-text">
-                    Please make payment to the following account:<br>
-                    <strong>Bank Name:</strong> Bank Central Asia (BCA)<br>
-                    <strong>Account Name:</strong> William Neilson Likamto<br>
-                    <strong>Account Number:</strong> 6042123672
-                </div>
-                <div class="pay-thanks">Thank you for your purchase!</div>
-            </td>
-            <td style="vertical-align:bottom; text-align:right; width:35%;">
-                <div style="display: inline-block; text-align: center; width: 80px;">
-                    <img src="{{ public_path('images/qr-linktree.png') }}" width="80" height="80" alt="QR" style="display: block; margin: 0 auto;">
-                    <div class="qr-label">LINKTREE</div>
-                </div>
-            </td>
-        </tr>
-    </table>
-</div>
 
-{{-- Brand bar --}}
 {{-- removed --}}
 
 {{-- Main content --}}
@@ -297,8 +269,7 @@
             </tr>
             @endforelse
 
-            {{-- spacer --}}
-            <tr><td colspan="4" style="height:16pt; border-bottom:none;"></td></tr>
+
 
             {{-- SUBTOTAL --}}
             <tr>
@@ -329,6 +300,28 @@
             </tr>
         </tbody>
     </table>
+
+    <div id="footer-payment">
+        <table width="100%" style="border-collapse:collapse;">
+            <tr>
+                <td style="vertical-align:bottom; width:65%;">
+                    <div class="pay-text">
+                        Please make payment to the following account:<br>
+                        <strong>Bank Name:</strong> Bank Central Asia (BCA)<br>
+                        <strong>Account Name:</strong> William Neilson Likamto<br>
+                        <strong>Account Number:</strong> 6042123672
+                    </div>
+                    <div class="pay-thanks">Thank you for your purchase!</div>
+                </td>
+                <td style="vertical-align:bottom; text-align:right; width:35%;">
+                    <div style="display: inline-block; text-align: center; width: 80px;">
+                        <img src="{{ public_path('images/qr-linktree.png') }}" width="80" height="80" alt="QR" style="display: block; margin: 0 auto;">
+                        <div class="qr-label">LINKTREE</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
 
 </div>{{-- .content --}}
 
