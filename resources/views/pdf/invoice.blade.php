@@ -42,8 +42,8 @@
         #footer-payment {
             position: fixed;
             bottom: 32pt;
-            left: 52pt;
-            right: 52pt;
+            left: 32pt;
+            right: 32pt;
         }
 
 
@@ -61,7 +61,7 @@
         /* ─── MAIN CONTENT ─── */
         /* bottom padding = footer area height (payment ~70pt + brand 46pt + gap) */
         .content {
-            padding: 44pt 52pt 140pt 52pt;
+            padding: 28pt 32pt 140pt 32pt;
         }
 
         /* ─── TITLE ─── */
@@ -69,7 +69,7 @@
             margin-bottom: 6pt;
         }
         .title img {
-            height: 40pt;
+            width: 60%;
             display: block;
         }
 
