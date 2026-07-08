@@ -198,12 +198,19 @@ class SalesOrderForm
                             ->options(function ($get) {
                                 $query = \App\Models\Product::query();
                                 $vehicleId = $get('../../vehicle_id');
+                                $state = $get('product_name');
                                 if ($vehicleId) {
                                     $vehicle = \App\Models\Vehicle::find($vehicleId);
                                     if ($vehicle) {
-                                        $query->whereHas('brand', function ($q) use ($vehicle) {
-                                            $q->whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))]);
-                                        })->whereRaw('LOWER(car_model) = ?', [strtolower(trim($vehicle->model))]);
+                                        $query->where(function ($q) use ($vehicle, $state) {
+                                            $q->whereHas('brand', function ($brandQuery) use ($vehicle) {
+                                                $brandQuery->whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))]);
+                                            })->whereRaw('LOWER(car_model) = ?', [strtolower(trim($vehicle->model))]);
+                                            
+                                            if ($state) {
+                                                $q->orWhere('name', $state);
+                                            }
+                                        });
                                     }
                                 }
                                 return $query->pluck('name', 'name');
