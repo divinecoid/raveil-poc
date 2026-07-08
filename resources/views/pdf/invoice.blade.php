@@ -208,14 +208,18 @@
 <body>
 
 {{-- Watermark --}}
+@if(optional($invoice->company)->slug === 'carbonized')
 <div id="watermark">
     <img src="{{ public_path('images/logo-carbonized-clean.png') }}" style="width: 100%; height: auto;" alt="Watermark">
 </div>
+@endif
 
 {{-- Brand bar (fixed bottom) --}}
+@if(optional($invoice->company)->slug === 'raveil')
 <div id="brand-bar">
     <img src="{{ public_path('images/logo-bottom.png') }}" style="width: 65%; height: auto; display: inline-block;" alt="Raveil Logo">
 </div>
+@endif
 
 {{-- Footer payment (fixed above brand bar) --}}
 <div id="footer-payment">

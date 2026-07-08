@@ -89,7 +89,7 @@ class InvoicesTable
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->action(function ($record) {
-                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['invoice' => $record->load('items', 'customer', 'salesOrder')])
+                        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['invoice' => $record->load('items', 'customer', 'salesOrder', 'company')])
                             ->setPaper('a4', 'portrait')
                             ->setOptions(array_merge(
                                 config('dompdf.options') ?? [],
