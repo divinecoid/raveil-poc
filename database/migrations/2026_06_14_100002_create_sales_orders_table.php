@@ -9,10 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sales_orders', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('order_number')->unique();
-            $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('vehicle_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUuid('customer_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignUuid('vehicle_id')->nullable()->constrained()->nullOnDelete();
             $table->string('status')->default('Pending'); // Pending, Processing, Completed, Cancelled
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->text('notes')->nullable();

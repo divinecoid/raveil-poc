@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('studio_photos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('company_id')->constrained()->cascadeOnDelete();
             $table->string('title')->nullable();
             $table->string('image');
             $table->integer('sort_order')->default(0);

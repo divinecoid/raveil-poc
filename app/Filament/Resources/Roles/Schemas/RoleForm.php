@@ -45,6 +45,9 @@ class RoleForm
                     ->live()
                     ->disabled(fn (?Role $record) => $record && strtolower($record->name) === 'superadmin')
                     ->formatStateUsing(function (?Role $record) {
+                        if ($record && strtolower($record->name) === 'superadmin') {
+                            return true;
+                        }
                         if (!$record) return false;
                         if (!$record->permissions) return false;
                         foreach ($record->permissions as $resKey => $resPerms) {
@@ -112,6 +115,12 @@ class RoleForm
                         ->hiddenLabel()
                         ->live()
                         ->disabled(fn (?Role $record) => $record && strtolower($record->name) === 'superadmin')
+                        ->formatStateUsing(function ($state, ?Role $record) {
+                            if ($record && strtolower($record->name) === 'superadmin') {
+                                return true;
+                            }
+                            return $state;
+                        })
                         ->afterStateUpdated(function ($state, $set, $get) use ($key, $resources) {
                             $set("permissions.{$key}.view", $state);
                             $set("permissions.{$key}.create", $state);
@@ -137,21 +146,45 @@ class RoleForm
                         ->hiddenLabel()
                         ->live()
                         ->disabled(fn (?Role $record) => $record && strtolower($record->name) === 'superadmin')
+                        ->formatStateUsing(function ($state, ?Role $record) {
+                            if ($record && strtolower($record->name) === 'superadmin') {
+                                return true;
+                            }
+                            return $state;
+                        })
                         ->afterStateUpdated($updateAllCheckbox),
                     Checkbox::make("permissions.{$key}.create")
                         ->hiddenLabel()
                         ->live()
                         ->disabled(fn (?Role $record) => $record && strtolower($record->name) === 'superadmin')
+                        ->formatStateUsing(function ($state, ?Role $record) {
+                            if ($record && strtolower($record->name) === 'superadmin') {
+                                return true;
+                            }
+                            return $state;
+                        })
                         ->afterStateUpdated($updateAllCheckbox),
                     Checkbox::make("permissions.{$key}.edit")
                         ->hiddenLabel()
                         ->live()
                         ->disabled(fn (?Role $record) => $record && strtolower($record->name) === 'superadmin')
+                        ->formatStateUsing(function ($state, ?Role $record) {
+                            if ($record && strtolower($record->name) === 'superadmin') {
+                                return true;
+                            }
+                            return $state;
+                        })
                         ->afterStateUpdated($updateAllCheckbox),
                     Checkbox::make("permissions.{$key}.delete")
                         ->hiddenLabel()
                         ->live()
                         ->disabled(fn (?Role $record) => $record && strtolower($record->name) === 'superadmin')
+                        ->formatStateUsing(function ($state, ?Role $record) {
+                            if ($record && strtolower($record->name) === 'superadmin') {
+                                return true;
+                            }
+                            return $state;
+                        })
                         ->afterStateUpdated($updateAllCheckbox),
                 ])
                 ->extraAttributes(['class' => 'py-2 border-b border-gray-100 dark:border-gray-800 align-middle']);

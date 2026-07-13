@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Illuminate\Support\Facades\DB::table('settings')->updateOrInsert(
             ['key' => 'hero_video'],
-            ['value' => 'videos/hero-breaktherules.mp4', 'created_at' => now(), 'updated_at' => now()]
+            ['id' => (string) \Illuminate\Support\Str::uuid(), 'value' => 'videos/hero-breaktherules.mp4', 'created_at' => now(), 'updated_at' => now()]
         );
     }
 

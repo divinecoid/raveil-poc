@@ -12,14 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Create default companies
-        $raveilId = DB::table('companies')->insertGetId([
+        $raveilId = (string) \Illuminate\Support\Str::uuid();
+        DB::table('companies')->insert([
+            'id' => $raveilId,
             'name' => 'RAVEIL',
             'slug' => 'raveil',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        $carbonizedId = DB::table('companies')->insertGetId([
+        $carbonizedId = (string) \Illuminate\Support\Str::uuid();
+        DB::table('companies')->insert([
+            'id' => $carbonizedId,
             'name' => 'CARBONIZED',
             'slug' => 'carbonized',
             'created_at' => now(),
@@ -43,8 +47,7 @@ return new class extends Migration
 
         foreach ($tables as $table) {
             Schema::table($table, function (Blueprint $t) use ($raveilId) {
-                // Add company_id with a default value of 1 (RAVEIL) to handle existing rows safely
-                $t->foreignId('company_id')->default($raveilId)->constrained()->cascadeOnDelete();
+                $t->foreignUuid('company_id')->default($raveilId)->constrained()->cascadeOnDelete();
             });
         }
         

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements HasTenants
 {
+    use HasUuids;
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 

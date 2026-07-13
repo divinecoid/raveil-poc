@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_movements', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('product_id')->constrained()->cascadeOnDelete();
             $table->string('type'); // 'in', 'out'
             $table->integer('quantity');
             $table->string('reference_type')->nullable(); // e.g. App\Models\SalesOrder

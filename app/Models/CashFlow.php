@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
 use Illuminate\Database\Eloquent\Model;
 
 class CashFlow extends Model
 {
+    use HasUuids;
     use \App\Models\Traits\BelongsToCompany;
 
     public $table = 'cash_flows';

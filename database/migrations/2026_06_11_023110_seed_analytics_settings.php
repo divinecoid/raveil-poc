@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Illuminate\Support\Facades\DB::table('settings')->updateOrInsert(
             ['key' => 'visitor_count'],
-            ['value' => '0', 'created_at' => now(), 'updated_at' => now()]
+            ['id' => (string) \Illuminate\Support\Str::uuid(), 'value' => '0', 'created_at' => now(), 'updated_at' => now()]
         );
         Illuminate\Support\Facades\DB::table('settings')->updateOrInsert(
             ['key' => 'whatsapp_click_count'],
-            ['value' => '0', 'created_at' => now(), 'updated_at' => now()]
+            ['id' => (string) \Illuminate\Support\Str::uuid(), 'value' => '0', 'created_at' => now(), 'updated_at' => now()]
         );
     }
 
