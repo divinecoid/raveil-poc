@@ -31,6 +31,13 @@ class UserForm
                             ->searchable()
                             ->label('Role')
                             ->required(),
+                        Select::make('companies')
+                            ->relationship('companies', 'name')
+                            ->multiple()
+                            ->preload()
+                            ->searchable()
+                            ->label('Akses Perusahaan (Companies)')
+                            ->required(),
                     ])
                     ->columns(2),
             ]);
