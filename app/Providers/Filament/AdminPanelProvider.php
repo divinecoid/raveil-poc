@@ -116,16 +116,7 @@ class AdminPanelProvider extends PanelProvider
                     </style>
                 ')
             )
-            ->renderHook(
-                'panels::auth.login.form.after',
-                fn (): \Illuminate\Contracts\View\View|\Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString('
-                    <div class="demo-creds-box" style="margin-top: 1.5rem; padding: 1rem; background-color: rgba(255, 255, 255, 0.01); border-radius: 0.5rem; text-align: center; border: 1px solid rgba(255,255,255,0.04);">
-                        <p style="font-size: 0.75rem; color: #8a8a8a; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;"><strong>Demo Credentials</strong></p>
-                        <p style="font-size: 0.875rem; color: #f0f0f0;">Email: <span style="font-family: monospace;">admin@admin.com</span></p>
-                        <p style="font-size: 0.875rem; color: #f0f0f0;">Password: <span style="font-family: monospace;">password</span></p>
-                    </div>
-                ')
-            )
+
             ->colors([
                 'primary' => Color::Zinc,
                 'gray' => Color::Zinc,
@@ -143,6 +134,7 @@ class AdminPanelProvider extends PanelProvider
                 'Master Data',
                 'Transaksi',
                 'Finance',
+                'User Management',
             ])
             ->middleware([
                 EncryptCookies::class,

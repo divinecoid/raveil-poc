@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'permissions', 'role_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements HasTenants
 {
@@ -33,7 +33,34 @@ class User extends Authenticatable implements HasTenants
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'permissions' => 'array',
         ];
+    }
+
+    public function role(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        // Check role permissions first if a role is assigned
+        if ($this->role) {
+            if ($this->role->permissions === null) {
+                return true;
+            }
+            return (bool) \Illuminate\Support\Arr::get($this->role->permissions, $permission, false);
+        }
+
+        // Fallback to direct user permissions if no role is assigned
+        if ($this->permissions === null) {
+            return true;
+        }
+
+        if (!is_array($this->permissions)) {
+            return false;
+        }
+        return (bool) \Illuminate\Support\Arr::get($this->permissions, $permission, false);
     }
 
     public function companies(): BelongsToMany

@@ -21,11 +21,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create default Superadmin role
+        $superadminRole = \App\Models\Role::firstOrCreate([
+            'name' => 'Superadmin',
+        ], [
+            'permissions' => null,
+        ]);
+
         // 1. Seed the Admin User for local testing
         $admin = User::factory()->create([
             'name' => 'Raveil Admin',
             'email' => 'admin@admin.com',
             'password' => Hash::make('password'),
+            'role_id' => $superadminRole->id,
         ]);
 
         // Attach admin user to all seeded companies
