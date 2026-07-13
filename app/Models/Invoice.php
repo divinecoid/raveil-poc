@@ -30,12 +30,15 @@ class Invoice extends Model
 
     public static function generateInvoiceNumber(): string
     {
+        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenantSlug = $tenant ? strtoupper($tenant->slug) : 'RAV';
+        $tenantPrefix = substr($tenantSlug, 0, 3);
+        
         $datePrefix = now()->format('Ymd');
-        $prefix = 'INV-RAV-' . $datePrefix . '-';
+        $prefix = 'INV-' . $tenantPrefix . '-' . $datePrefix . '-';
 
-        $latestInvoice = self::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->orderBy('id', 'desc')
+        $latestInvoice = self::where('invoice_number', 'like', $prefix . '%')
+            ->orderBy('invoice_number', 'desc')
             ->first();
 
         if ($latestInvoice && preg_match('/-(\d{4})$/', $latestInvoice->invoice_number, $matches)) {

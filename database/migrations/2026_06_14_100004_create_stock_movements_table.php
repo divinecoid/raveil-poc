@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('type'); // 'in', 'out'
             $table->integer('quantity');
             $table->string('reference_type')->nullable(); // e.g. App\Models\SalesOrder
-            $table->unsignedBigInteger('reference_id')->nullable();
+            $table->string('reference_id')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

@@ -45,12 +45,15 @@ class SalesOrder extends Model
 
     public static function generateOrderNumber(): string
     {
+        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenantSlug = $tenant ? strtoupper($tenant->slug) : 'RAV';
+        $tenantPrefix = substr($tenantSlug, 0, 3);
+        
         $datePrefix = now()->format('Ymd');
-        $prefix = 'SO-RAV-' . $datePrefix . '-';
+        $prefix = 'SO-' . $tenantPrefix . '-' . $datePrefix . '-';
 
-        $latestOrder = self::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->orderBy('id', 'desc')
+        $latestOrder = self::where('order_number', 'like', $prefix . '%')
+            ->orderBy('order_number', 'desc')
             ->first();
 
         if ($latestOrder && preg_match('/-(\d{4})$/', $latestOrder->order_number, $matches)) {
