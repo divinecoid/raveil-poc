@@ -14,8 +14,8 @@ class StockMovementsTable
     {
         return $table
             ->columns([
-                TextColumn::make('product_id')
-                    ->numeric()
+                TextColumn::make('product.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('type')
                     ->searchable(),
@@ -26,7 +26,6 @@ class StockMovementsTable
                     ->formatStateUsing(fn (string $state): string => \Illuminate\Support\Str::headline(class_basename($state)))
                     ->searchable(),
                 TextColumn::make('reference_id')
-                    ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -14,8 +14,8 @@ class TasksTable
     {
         return $table
             ->columns([
-                TextColumn::make('project_id')
-                    ->numeric()
+                TextColumn::make('project.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('title')
                     ->searchable(),

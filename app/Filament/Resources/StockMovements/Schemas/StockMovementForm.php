@@ -27,8 +27,7 @@ class StockMovementForm
                     ->required()
                     ->numeric(),
                 TextInput::make('reference_type'),
-                TextInput::make('reference_id')
-                    ->numeric(),
+                TextInput::make('reference_id'),
                 Textarea::make('notes')
                     ->columnSpanFull(),
             ]);
