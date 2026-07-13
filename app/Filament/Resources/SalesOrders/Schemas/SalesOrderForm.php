@@ -51,6 +51,24 @@ class SalesOrderForm
                         $set('vehicle_id', null);
                         $set('vehicle_brand', null);
                         $set('vehicle_model', null);
+                    })
+                    ->createOptionForm([
+                        \Filament\Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('phone')
+                            ->tel()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\TextInput::make('email')
+                            ->email()
+                            ->maxLength(255),
+                        \Filament\Forms\Components\Textarea::make('address')
+                            ->columnSpanFull(),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                        $customer = \App\Models\Customer::create($data);
+                        return $customer->id;
                     }),
                 \Filament\Forms\Components\Select::make('vehicle_id')
                     ->relationship('vehicle', 'license_plate', function ($query, $get) {
@@ -131,18 +149,35 @@ class SalesOrderForm
                         \Filament\Forms\Components\TextInput::make('year')
                             ->maxLength(255),
                     ])
-                    ->createOptionUsing(function (array $data, $get, $set) {
-                        $customerId = $get('customer_id');
-                        if (! $customerId) {
-                            throw new \Illuminate\Validation\ValidationException(
-                                \Illuminate\Support\Facades\Validator::make([], [])->errors()->add('vehicle_id', 'Please select a customer first before creating a vehicle.')
-                            );
+                    ->createOptionUsing(function (array $data, $get, $set, $livewire) {
+                        \Illuminate\Support\Facades\Log::info('Paths check:', [
+                            'direct' => $get('customer_id'),
+                            'one_level_up' => $get('../customer_id'),
+                            'two_levels_up' => $get('../../customer_id'),
+                            'three_levels_up' => $get('../../../customer_id'),
+                            'livewire_data' => isset($livewire->data) ? $livewire->data : null,
+                        ]);
+                        
+                        try {
+                            $customerId = $get('../../customer_id') ?: ($livewire->data['customer_id'] ?? null);
+                            if (! $customerId) {
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Customer Belum Dipilih')
+                                    ->body('Silakan pilih customer terlebih dahulu sebelum menambahkan kendaraan.')
+                                    ->danger()
+                                    ->send();
+                                return null;
+                            }
+                            $data['customer_id'] = $customerId;
+                            $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                            $vehicle = \App\Models\Vehicle::create($data);
+                            $set('vehicle_brand', $vehicle->brand);
+                            $set('vehicle_model', $vehicle->model);
+                            return $vehicle->getKey();
+                        } catch (\Exception $e) {
+                            \Illuminate\Support\Facades\Log::error('Vehicle Create Failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                            throw $e;
                         }
-                        $data['customer_id'] = $customerId;
-                        $vehicle = \App\Models\Vehicle::create($data);
-                        $set('vehicle_brand', $vehicle->brand);
-                        $set('vehicle_model', $vehicle->model);
-                        return $vehicle->getKey();
                     })
                     ->afterStateUpdated(function ($state, $set) {
                         if (! $state) {
@@ -227,14 +262,44 @@ class SalesOrderForm
                                     ->options(fn () => \App\Models\Category::pluck('name', 'id')->toArray())
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
+                                    ->required()
+                                    ->createOptionForm([
+                                        \Filament\Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->maxLength(255),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                                        $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
+                                        $category = \App\Models\Category::create($data);
+                                        return $category->id;
+                                    }),
                                 \Filament\Forms\Components\Select::make('brand_id')
-                                    ->options(fn () => \App\Models\Brand::pluck('name', 'id')->toArray())
-                                    ->searchable()
-                                    ->preload(),
-                                \Filament\Forms\Components\TextInput::make('car_model')
-                                    ->label('Car Model')
-                                    ->maxLength(255),
+                                     ->options(fn () => \App\Models\Brand::pluck('name', 'id')->toArray())
+                                     ->searchable()
+                                     ->preload()
+                                     ->default(function ($livewire) {
+                                         $vehicleId = $livewire->data['vehicle_id'] ?? null;
+                                         if ($vehicleId) {
+                                             $vehicle = \App\Models\Vehicle::find($vehicleId);
+                                             if ($vehicle) {
+                                                 $brand = \App\Models\Brand::whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))])->first();
+                                                 return $brand?->id;
+                                             }
+                                         }
+                                         return null;
+                                     }),
+                                 \Filament\Forms\Components\TextInput::make('car_model')
+                                     ->label('Car Model')
+                                     ->maxLength(255)
+                                     ->default(function ($livewire) {
+                                         $vehicleId = $livewire->data['vehicle_id'] ?? null;
+                                         if ($vehicleId) {
+                                             $vehicle = \App\Models\Vehicle::find($vehicleId);
+                                             return $vehicle?->model;
+                                         }
+                                         return null;
+                                     }),
                                 \Filament\Forms\Components\TextInput::make('price')
                                     ->numeric()
                                     ->label('Price'),
