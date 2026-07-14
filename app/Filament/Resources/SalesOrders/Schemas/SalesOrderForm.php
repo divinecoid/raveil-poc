@@ -280,6 +280,10 @@ class SalesOrderForm
                                     ->options(fn() => \App\Models\Brand::pluck('name', 'id')->toArray())
                                     ->searchable()
                                     ->preload()
+                                    ->live()
+                                    ->afterStateUpdated(function ($set) {
+                                        $set('car_model', null);
+                                    })
                                     ->default(function ($livewire) {
                                         $vehicleId = $livewire->data['vehicle_id'] ?? null;
                                         if ($vehicleId) {
@@ -290,10 +294,30 @@ class SalesOrderForm
                                             }
                                         }
                                         return null;
+                                    })
+                                    ->createOptionForm([
+                                        \Filament\Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->maxLength(255),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                                        $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
+                                        $brand = \App\Models\Brand::create($data);
+                                        return $brand->id;
                                     }),
-                                \Filament\Forms\Components\TextInput::make('car_model')
+                                \Filament\Forms\Components\Select::make('car_model')
                                     ->label('Car Model')
-                                    ->maxLength(255)
+                                    ->options(function ($get) {
+                                        $brandId = $get('brand_id');
+                                        $query = \App\Models\CarModel::query();
+                                        if ($brandId) {
+                                            $query->where('brand_id', $brandId);
+                                        }
+                                        return $query->pluck('name', 'name')->toArray();
+                                    })
+                                    ->searchable()
+                                    ->preload()
                                     ->default(function ($livewire) {
                                         $vehicleId = $livewire->data['vehicle_id'] ?? null;
                                         if ($vehicleId) {
@@ -301,6 +325,25 @@ class SalesOrderForm
                                             return $vehicle?->model;
                                         }
                                         return null;
+                                    })
+                                    ->createOptionForm([
+                                        \Filament\Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->maxLength(255),
+                                    ])
+                                    ->createOptionUsing(function (array $data, $get) {
+                                        $brandId = $get('brand_id');
+                                        $companyId = \Filament\Facades\Filament::getTenant()->id;
+                                        $slug = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
+                                        
+                                        $carModel = \App\Models\CarModel::create([
+                                            'company_id' => $companyId,
+                                            'brand_id' => $brandId,
+                                            'name' => $data['name'],
+                                            'slug' => $slug,
+                                        ]);
+                                        
+                                        return $carModel->name;
                                     }),
                                 \Filament\Forms\Components\TextInput::make('price')
                                     ->numeric()
