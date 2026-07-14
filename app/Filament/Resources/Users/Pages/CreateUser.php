@@ -13,7 +13,7 @@ class CreateUser extends CreateRecord
     {
         $tenant = \Filament\Facades\Filament::getTenant();
         if ($tenant) {
-            $this->record->companies()->attach($tenant);
+            $this->record->companies()->syncWithoutDetaching([$tenant->id]);
         }
     }
 }
