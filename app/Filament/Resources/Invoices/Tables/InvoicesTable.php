@@ -15,6 +15,7 @@ class InvoicesTable
     {
         return $table
             ->recordUrl(null)
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('invoice_number')
                     ->searchable(),
