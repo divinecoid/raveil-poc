@@ -25,6 +25,10 @@ class ProductsTable
                     ->label('Brand')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('supplier.name')
+                    ->label('Supplier')
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('slug')

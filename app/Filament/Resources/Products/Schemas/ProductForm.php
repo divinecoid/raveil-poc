@@ -20,6 +20,28 @@ class ProductForm
                     ->required(),
                 Select::make('brand_id')
                     ->relationship('brand', 'name'),
+                Select::make('supplier_id')
+                    ->relationship('supplier', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('phone')
+                            ->tel()
+                            ->maxLength(255),
+                        TextInput::make('email')
+                            ->email()
+                            ->maxLength(255),
+                        Textarea::make('address')
+                            ->columnSpanFull(),
+                    ])
+                    ->createOptionUsing(function (array $data) {
+                        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                        $supplier = \App\Models\Supplier::create($data);
+                        return $supplier->id;
+                    }),
                 TextInput::make('car_model')
                     ->placeholder('e.g., 911 (992) GT3, Roma, M4 (G82)'),
                 TextInput::make('name')

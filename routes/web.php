@@ -77,7 +77,8 @@ Route::get('/admin/finance/pdf', function (\Illuminate\Http\Request $request) {
     $start = $request->input('start', now()->startOfMonth()->toDateString());
     $end = $request->input('end', now()->endOfMonth()->toDateString());
 
-    $invoices = \App\Models\Invoice::where('status', 'Paid')
+    $invoices = \App\Models\Invoice::with(['salesOrder.items.product.supplier', 'salesOrder.services', 'customer'])
+        ->where('status', 'Paid')
         ->whereBetween('issue_date', [$start, $end])
         ->get();
     
@@ -89,7 +90,8 @@ Route::get('/admin/finance/pdf', function (\Illuminate\Http\Request $request) {
     $totalExpense = $expenses->sum('amount');
     $netProfit = $totalIncome - $totalExpense;
 
-    $receivables = \App\Models\Invoice::where('status', 'Unpaid')
+    $receivables = \App\Models\Invoice::with(['salesOrder.items.product.supplier', 'salesOrder.services', 'customer'])
+        ->where('status', 'Unpaid')
         ->whereBetween('issue_date', [$start, $end])
         ->get();
 

@@ -52,20 +52,71 @@
                 <th>Date</th>
                 <th>Invoice No</th>
                 <th>Customer</th>
-                <th class="text-right">Amount</th>
+                <th>Product/Service</th>
+                <th>Supplier</th>
+                <th class="text-right">Harga Modal</th>
+                <th class="text-right">Harga Jual</th>
+                <th class="text-right">Profit</th>
             </tr>
         </thead>
         <tbody>
             @forelse($invoices as $inv)
-            <tr>
-                <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
-                <td>{{ $inv->invoice_number }}</td>
-                <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
-                <td class="text-right">Rp {{ number_format($inv->total, 0, ',', '.') }}</td>
-            </tr>
+                @if($inv->salesOrder)
+                    {{-- Products --}}
+                    @foreach($inv->salesOrder->items as $item)
+                        @php
+                            $product = $item->product;
+                            $supplierName = $product && $product->supplier ? $product->supplier->name : '-';
+                            $costPrice = $product && $product->cost_price ? $product->cost_price : 0;
+                            $totalCost = $costPrice * $item->quantity;
+                            $totalSell = $item->subtotal;
+                            $profit = $totalSell - $totalCost;
+                        @endphp
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
+                            <td>{{ $inv->invoice_number }}</td>
+                            <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
+                            <td>{{ $item->product_name ?? ($product ? $product->name : 'N/A') }} (x{{ $item->quantity }})</td>
+                            <td>{{ $supplierName }}</td>
+                            <td class="text-right">Rp {{ number_format($totalCost, 0, ',', '.') }}</td>
+                            <td class="text-right">Rp {{ number_format($totalSell, 0, ',', '.') }}</td>
+                            <td class="text-right {{ $profit >= 0 ? 'text-success' : 'text-danger' }}">Rp {{ number_format($profit, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                    
+                    {{-- Services --}}
+                    @foreach($inv->salesOrder->services as $service)
+                        @php
+                            $totalCost = 0;
+                            $totalSell = $service->subtotal;
+                            $profit = $totalSell;
+                        @endphp
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
+                            <td>{{ $inv->invoice_number }}</td>
+                            <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
+                            <td>{{ $service->service_name }} (x{{ $service->quantity }})</td>
+                            <td>-</td>
+                            <td class="text-right">Rp 0</td>
+                            <td class="text-right">Rp {{ number_format($totalSell, 0, ',', '.') }}</td>
+                            <td class="text-right text-success">Rp {{ number_format($profit, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
+                        <td>{{ $inv->invoice_number }}</td>
+                        <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">Rp {{ number_format($inv->total, 0, ',', '.') }}</td>
+                        <td class="text-right">-</td>
+                    </tr>
+                @endif
             @empty
             <tr>
-                <td colspan="4" style="text-align: center;">No income recorded in this period.</td>
+                <td colspan="8" style="text-align: center;">No income recorded in this period.</td>
             </tr>
             @endforelse
         </tbody>
@@ -104,20 +155,71 @@
                 <th>Date</th>
                 <th>Invoice No</th>
                 <th>Customer</th>
-                <th class="text-right">Amount</th>
+                <th>Product/Service</th>
+                <th>Supplier</th>
+                <th class="text-right">Harga Modal</th>
+                <th class="text-right">Harga Jual</th>
+                <th class="text-right">Profit</th>
             </tr>
         </thead>
         <tbody>
             @forelse($receivables as $inv)
-            <tr>
-                <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
-                <td>{{ $inv->invoice_number }}</td>
-                <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
-                <td class="text-right">Rp {{ number_format($inv->total, 0, ',', '.') }}</td>
-            </tr>
+                @if($inv->salesOrder)
+                    {{-- Products --}}
+                    @foreach($inv->salesOrder->items as $item)
+                        @php
+                            $product = $item->product;
+                            $supplierName = $product && $product->supplier ? $product->supplier->name : '-';
+                            $costPrice = $product && $product->cost_price ? $product->cost_price : 0;
+                            $totalCost = $costPrice * $item->quantity;
+                            $totalSell = $item->subtotal;
+                            $profit = $totalSell - $totalCost;
+                        @endphp
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
+                            <td>{{ $inv->invoice_number }}</td>
+                            <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
+                            <td>{{ $item->product_name ?? ($product ? $product->name : 'N/A') }} (x{{ $item->quantity }})</td>
+                            <td>{{ $supplierName }}</td>
+                            <td class="text-right">Rp {{ number_format($totalCost, 0, ',', '.') }}</td>
+                            <td class="text-right">Rp {{ number_format($totalSell, 0, ',', '.') }}</td>
+                            <td class="text-right {{ $profit >= 0 ? 'text-success' : 'text-danger' }}">Rp {{ number_format($profit, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                    
+                    {{-- Services --}}
+                    @foreach($inv->salesOrder->services as $service)
+                        @php
+                            $totalCost = 0;
+                            $totalSell = $service->subtotal;
+                            $profit = $totalSell;
+                        @endphp
+                        <tr>
+                            <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
+                            <td>{{ $inv->invoice_number }}</td>
+                            <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
+                            <td>{{ $service->service_name }} (x{{ $service->quantity }})</td>
+                            <td>-</td>
+                            <td class="text-right">Rp 0</td>
+                            <td class="text-right">Rp {{ number_format($totalSell, 0, ',', '.') }}</td>
+                            <td class="text-right text-success">Rp {{ number_format($profit, 0, ',', '.') }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($inv->issue_date)->format('d M Y') }}</td>
+                        <td>{{ $inv->invoice_number }}</td>
+                        <td>{{ $inv->customer ? $inv->customer->name : 'N/A' }}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">Rp {{ number_format($inv->total, 0, ',', '.') }}</td>
+                        <td class="text-right">-</td>
+                    </tr>
+                @endif
             @empty
             <tr>
-                <td colspan="4" style="text-align: center;">No unpaid invoices in this period.</td>
+                <td colspan="8" style="text-align: center;">No unpaid invoices in this period.</td>
             </tr>
             @endforelse
         </tbody>

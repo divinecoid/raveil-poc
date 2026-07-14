@@ -29,6 +29,7 @@ class RoleForm
             'categories' => 'Categories',
             'users' => 'User Management',
             'roles' => 'Role Management',
+            'suppliers' => 'Suppliers',
         ];
 
         $permissionsSchema = [];
