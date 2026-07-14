@@ -10,11 +10,9 @@
 @endphp
 
 <style>
-    /* Prevent table container from clipping the status dropdown */
-    .fi-ta-content, 
-    .fi-ta-table-container {
-        min-height: 220px !important;
-        overflow: visible !important;
+    /* Prevent table container from clipping the status dropdown by adding bottom padding */
+    .fi-ta-content {
+        padding-bottom: 130px !important;
     }
 </style>
 
