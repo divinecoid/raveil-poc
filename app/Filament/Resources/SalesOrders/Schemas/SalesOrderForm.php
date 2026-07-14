@@ -303,6 +303,9 @@ class SalesOrderForm
                                 \Filament\Forms\Components\TextInput::make('price')
                                     ->numeric()
                                     ->label('Price'),
+                                \Filament\Forms\Components\TextInput::make('cost_price')
+                                    ->numeric()
+                                    ->label('Cost Price (Harga Modal)'),
                                 \Filament\Forms\Components\Textarea::make('description')
                                     ->columnSpanFull(),
                             ])
