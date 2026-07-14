@@ -12,9 +12,9 @@ class SalesOrderForm
     {
         $items = $get('items') ?? [];
         $services = $get('services') ?? [];
-        
+
         $total = 0;
-        
+
         foreach ($items as $uuid => $item) {
             $quantity = isset($item['quantity']) && $item['quantity'] !== '' ? floatval($item['quantity']) : 1;
             $unitPrice = floatval($item['unit_price'] ?? 0);
@@ -22,7 +22,7 @@ class SalesOrderForm
             $set("items.{$uuid}.subtotal", $subtotal);
             $total += $subtotal;
         }
-        
+
         foreach ($services as $uuid => $service) {
             $quantity = isset($service['quantity']) && $service['quantity'] !== '' ? floatval($service['quantity']) : 1;
             $unitPrice = floatval($service['unit_price'] ?? 0);
@@ -30,7 +30,7 @@ class SalesOrderForm
             $set("services.{$uuid}.subtotal", $subtotal);
             $total += $subtotal;
         }
-        
+
         $set('total_amount', $total);
     }
 
@@ -40,7 +40,7 @@ class SalesOrderForm
             ->components([
                 TextInput::make('order_number')
                     ->required()
-                    ->default(fn () => \App\Models\SalesOrder::generateOrderNumber())
+                    ->default(fn() => \App\Models\SalesOrder::generateOrderNumber())
                     ->unique(ignoreRecord: true),
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->relationship('customer', 'name')
@@ -77,7 +77,7 @@ class SalesOrderForm
                             $query->where('customer_id', $customerId);
                         }
                     })
-                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->license_plate} ({$record->brand} {$record->model})")
+                    ->getOptionLabelFromRecordUsing(fn($record) => "{$record->license_plate} ({$record->brand} {$record->model})")
                     ->searchable()
                     ->preload()
                     ->live()
@@ -86,7 +86,7 @@ class SalesOrderForm
                             ->required()
                             ->maxLength(255),
                         \Filament\Forms\Components\Select::make('brand')
-                            ->options(fn () => \App\Models\Brand::pluck('name', 'name')->toArray())
+                            ->options(fn() => \App\Models\Brand::pluck('name', 'name')->toArray())
                             ->searchable()
                             ->required()
                             ->live()
@@ -108,13 +108,13 @@ class SalesOrderForm
                             ->options(function ($get) {
                                 $brandName = $get('brand');
                                 $query = \App\Models\CarModel::query();
-                                
+
                                 if ($brandName) {
                                     $query->whereHas('brand', function ($q) use ($brandName) {
                                         $q->whereRaw('LOWER(name) = ?', [strtolower(trim($brandName))]);
                                     });
                                 }
-                                
+
                                 return $query->pluck('name', 'name')->toArray();
                             })
                             ->searchable()
@@ -133,17 +133,17 @@ class SalesOrderForm
                                         $brandId = $brand->id;
                                     }
                                 }
-                                
+
                                 $companyId = \Filament\Facades\Filament::getTenant()->id;
                                 $slug = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
-                                
+
                                 $carModel = \App\Models\CarModel::create([
                                     'company_id' => $companyId,
                                     'brand_id' => $brandId,
                                     'name' => $data['name'],
                                     'slug' => $slug,
                                 ]);
-                                
+
                                 return $carModel->name;
                             }),
                         \Filament\Forms\Components\TextInput::make('year')
@@ -157,10 +157,10 @@ class SalesOrderForm
                             'three_levels_up' => $get('../../../customer_id'),
                             'livewire_data' => isset($livewire->data) ? $livewire->data : null,
                         ]);
-                        
+
                         try {
                             $customerId = $get('../../customer_id') ?: ($livewire->data['customer_id'] ?? null);
-                            if (! $customerId) {
+                            if (!$customerId) {
                                 \Filament\Notifications\Notification::make()
                                     ->title('Customer Belum Dipilih')
                                     ->body('Silakan pilih customer terlebih dahulu sebelum menambahkan kendaraan.')
@@ -180,7 +180,7 @@ class SalesOrderForm
                         }
                     })
                     ->afterStateUpdated(function ($state, $set) {
-                        if (! $state) {
+                        if (!$state) {
                             $set('vehicle_brand', null);
                             $set('vehicle_model', null);
                             return;
@@ -214,7 +214,7 @@ class SalesOrderForm
                     ])
                     ->required()
                     ->default('Pending'),
-                  TextInput::make('total_amount')
+                TextInput::make('total_amount')
                     ->required()
                     ->numeric()
                     ->default(0.0)
@@ -241,7 +241,7 @@ class SalesOrderForm
                                             $q->whereHas('brand', function ($brandQuery) use ($vehicle) {
                                                 $brandQuery->whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))]);
                                             })->whereRaw('LOWER(car_model) = ?', [strtolower(trim($vehicle->model))]);
-                                            
+
                                             if ($state) {
                                                 $q->orWhere('name', $state);
                                             }
@@ -259,7 +259,8 @@ class SalesOrderForm
                                     ->required()
                                     ->maxLength(255),
                                 \Filament\Forms\Components\Select::make('category_id')
-                                    ->options(fn () => \App\Models\Category::pluck('name', 'id')->toArray())
+                                    ->label('Category')
+                                    ->options(fn() => \App\Models\Category::pluck('name', 'id')->toArray())
                                     ->searchable()
                                     ->preload()
                                     ->required()
@@ -275,44 +276,45 @@ class SalesOrderForm
                                         return $category->id;
                                     }),
                                 \Filament\Forms\Components\Select::make('brand_id')
-                                     ->options(fn () => \App\Models\Brand::pluck('name', 'id')->toArray())
-                                     ->searchable()
-                                     ->preload()
-                                     ->default(function ($livewire) {
-                                         $vehicleId = $livewire->data['vehicle_id'] ?? null;
-                                         if ($vehicleId) {
-                                             $vehicle = \App\Models\Vehicle::find($vehicleId);
-                                             if ($vehicle) {
-                                                 $brand = \App\Models\Brand::whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))])->first();
-                                                 return $brand?->id;
-                                             }
-                                         }
-                                         return null;
-                                     }),
-                                 \Filament\Forms\Components\TextInput::make('car_model')
-                                     ->label('Car Model')
-                                     ->maxLength(255)
-                                     ->default(function ($livewire) {
-                                         $vehicleId = $livewire->data['vehicle_id'] ?? null;
-                                         if ($vehicleId) {
-                                             $vehicle = \App\Models\Vehicle::find($vehicleId);
-                                             return $vehicle?->model;
-                                         }
-                                         return null;
-                                     }),
+                                    ->label('Brand')
+                                    ->options(fn() => \App\Models\Brand::pluck('name', 'id')->toArray())
+                                    ->searchable()
+                                    ->preload()
+                                    ->default(function ($livewire) {
+                                        $vehicleId = $livewire->data['vehicle_id'] ?? null;
+                                        if ($vehicleId) {
+                                            $vehicle = \App\Models\Vehicle::find($vehicleId);
+                                            if ($vehicle) {
+                                                $brand = \App\Models\Brand::whereRaw('LOWER(name) = ?', [strtolower(trim($vehicle->brand))])->first();
+                                                return $brand?->id;
+                                            }
+                                        }
+                                        return null;
+                                    }),
+                                \Filament\Forms\Components\TextInput::make('car_model')
+                                    ->label('Car Model')
+                                    ->maxLength(255)
+                                    ->default(function ($livewire) {
+                                        $vehicleId = $livewire->data['vehicle_id'] ?? null;
+                                        if ($vehicleId) {
+                                            $vehicle = \App\Models\Vehicle::find($vehicleId);
+                                            return $vehicle?->model;
+                                        }
+                                        return null;
+                                    }),
                                 \Filament\Forms\Components\TextInput::make('price')
                                     ->numeric()
                                     ->label('Price'),
                                 \Filament\Forms\Components\TextInput::make('cost_price')
                                     ->numeric()
-                                    ->label('Cost Price (Harga Modal)'),
+                                    ->label('Harga Modal'),
                                 \Filament\Forms\Components\Textarea::make('description')
                                     ->columnSpanFull(),
                             ])
                             ->createOptionUsing(function (array $data, $get) {
                                 $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
                                 $data['slug'] = \Illuminate\Support\Str::slug($data['name']) . '-' . uniqid();
-                                
+
                                 $vehicleId = $get('../../vehicle_id');
                                 if ($vehicleId) {
                                     $vehicle = \App\Models\Vehicle::find($vehicleId);
@@ -343,8 +345,8 @@ class SalesOrderForm
                                     $set('unit_price', 0);
                                 }
                                 self::updateTotals(
-                                    fn ($path) => $get("../../{$path}"),
-                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                    fn($path) => $get("../../{$path}"),
+                                    fn($path, $value) => $set("../../{$path}", $value)
                                 );
                             })
                             ->columnSpan(2),
@@ -356,8 +358,8 @@ class SalesOrderForm
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 self::updateTotals(
-                                    fn ($path) => $get("../../{$path}"),
-                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                    fn($path) => $get("../../{$path}"),
+                                    fn($path, $value) => $set("../../{$path}", $value)
                                 );
                             })
                             ->columnSpan(1),
@@ -368,8 +370,8 @@ class SalesOrderForm
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 self::updateTotals(
-                                    fn ($path) => $get("../../{$path}"),
-                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                    fn($path) => $get("../../{$path}"),
+                                    fn($path, $value) => $set("../../{$path}", $value)
                                 );
                             })
                             ->columnSpan(1),
@@ -400,8 +402,8 @@ class SalesOrderForm
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 self::updateTotals(
-                                    fn ($path) => $get("../../{$path}"),
-                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                    fn($path) => $get("../../{$path}"),
+                                    fn($path, $value) => $set("../../{$path}", $value)
                                 );
                             }),
                         TextInput::make('unit_price')
@@ -411,8 +413,8 @@ class SalesOrderForm
                             ->live()
                             ->afterStateUpdated(function ($state, $set, $get) {
                                 self::updateTotals(
-                                    fn ($path) => $get("../../{$path}"),
-                                    fn ($path, $value) => $set("../../{$path}", $value)
+                                    fn($path) => $get("../../{$path}"),
+                                    fn($path, $value) => $set("../../{$path}", $value)
                                 );
                             }),
                         TextInput::make('subtotal')
