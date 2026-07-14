@@ -14,14 +14,23 @@
         open: false,
         currentStatus: @js($state),
         statuses: @js($statusConfig),
+        direction: 'down',
         selectStatus(newStatus) {
             if (newStatus === this.currentStatus) { this.open = false; return; }
             this.open = false;
             const component = Livewire.all().find(c => c.name === 'App\\Filament\\Resources\\Invoices\\Pages\\ListInvoices');
             if (!component) { console.error('ListInvoices component not found'); return; }
             component.$wire.handleInvoiceStatusChange(@js((string) $key), newStatus);
+        },
+        checkPosition() {
+            this.$nextTick(() => {
+                const rect = this.$el.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                this.direction = spaceBelow < 160 ? 'up' : 'down';
+            });
         }
     }"
+    x-init="$watch('open', value => { if (value) checkPosition(); })"
     x-on:click.stop
     x-on:click.outside="open = false"
     style="position: relative; display: inline-block;"
@@ -66,7 +75,7 @@
         x-transition:leave="transition ease-in duration-75"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        style="position:absolute;top:calc(100% + 5px);left:0;z-index:60;min-width:155px;background:white;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.12),0 4px 10px -3px rgba(0,0,0,0.08);overflow:hidden;padding:4px;"
+        :style="`position:absolute; ${direction === 'up' ? 'bottom:calc(100% + 5px);' : 'top:calc(100% + 5px);'} left:0;z-index:60;min-width:155px;background:white;border:1px solid #e5e7eb;border-radius:10px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.12),0 4px 10px -3px rgba(0,0,0,0.08);overflow:hidden;padding:4px;`"
     >
         <template x-for="(config, status) in statuses" :key="status">
             <button
