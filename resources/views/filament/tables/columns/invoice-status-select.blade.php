@@ -9,6 +9,15 @@
     ];
 @endphp
 
+<style>
+    /* Prevent table container from clipping the status dropdown */
+    .fi-ta-content, 
+    .fi-ta-table-container {
+        min-height: 220px !important;
+        overflow: visible !important;
+    }
+</style>
+
 <div
     x-data="{
         open: false,
