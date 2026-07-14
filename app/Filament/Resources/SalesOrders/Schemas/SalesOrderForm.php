@@ -308,7 +308,7 @@ class SalesOrderForm
                                     }),
                                 \Filament\Forms\Components\Select::make('supplier_id')
                                     ->label('Supplier')
-                                    ->relationship('supplier', 'name')
+                                    ->options(fn() => \App\Models\Supplier::pluck('name', 'id')->toArray())
                                     ->searchable()
                                     ->preload()
                                     ->createOptionForm([
