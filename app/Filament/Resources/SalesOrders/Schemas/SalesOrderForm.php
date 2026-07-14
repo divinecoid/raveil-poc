@@ -306,6 +306,29 @@ class SalesOrderForm
                                         $brand = \App\Models\Brand::create($data);
                                         return $brand->id;
                                     }),
+                                \Filament\Forms\Components\Select::make('supplier_id')
+                                    ->label('Supplier')
+                                    ->relationship('supplier', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->createOptionForm([
+                                        \Filament\Forms\Components\TextInput::make('name')
+                                            ->required()
+                                            ->maxLength(255),
+                                        \Filament\Forms\Components\TextInput::make('phone')
+                                            ->tel()
+                                            ->maxLength(255),
+                                        \Filament\Forms\Components\TextInput::make('email')
+                                            ->email()
+                                            ->maxLength(255),
+                                        \Filament\Forms\Components\Textarea::make('address')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->createOptionUsing(function (array $data) {
+                                        $data['company_id'] = \Filament\Facades\Filament::getTenant()->id;
+                                        $supplier = \App\Models\Supplier::create($data);
+                                        return $supplier->id;
+                                    }),
                                 \Filament\Forms\Components\Select::make('car_model')
                                     ->label('Car Model')
                                     ->options(function ($get) {
