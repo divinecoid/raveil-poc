@@ -33,6 +33,9 @@ Route::get('/', function () {
     // Fetch active studio photos sorted by sort_order
     $studioPhotos = \App\Models\StudioPhoto::where('is_active', true)->orderBy('sort_order')->get();
 
+    // Fetch car models to get their images
+    $carModels = \App\Models\CarModel::with('brand')->get();
+
     // Increment visitor count if not visited in current session
     if (!session()->has('visited')) {
         session()->put('visited', true);
@@ -41,7 +44,7 @@ Route::get('/', function () {
         $visitorSetting->save();
     }
 
-    return view('catalog', compact('products', 'brands', 'hasUniversal', 'studioPhotos', 'whatsapp', 'instagram', 'heroVideoUrl'));
+    return view('catalog', compact('products', 'brands', 'hasUniversal', 'studioPhotos', 'whatsapp', 'instagram', 'heroVideoUrl', 'carModels'));
 });
 
 Route::post('/track-whatsapp-click', function () {

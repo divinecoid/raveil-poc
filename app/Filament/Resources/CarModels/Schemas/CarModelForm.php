@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CarModels\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\FileUpload;
 use Filament\Schemas\Schema;
 
 class CarModelForm
@@ -24,6 +25,11 @@ class CarModelForm
                 TextInput::make('slug')
                     ->required()
                     ->unique(ignoreRecord: true),
+                FileUpload::make('image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('car-models')
+                    ->preserveFilenames(),
             ]);
     }
 }

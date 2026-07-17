@@ -886,6 +886,27 @@
             width: 100%;
         }
 
+        .model-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s;
+            z-index: 0;
+        }
+        .model-card:hover .model-card-bg {
+            transform: scale(1.05);
+            opacity: 0.35;
+        }
+        .model-card > span {
+            position: relative;
+            z-index: 1;
+        }
+
         .model-name-text {
             font-family: 'Cormorant Garamond', serif;
             font-size: 1.5rem;
@@ -1489,6 +1510,13 @@
                 $modelsByBrand[$brandSlug]['models'][$modelName]++;
             }
 
+            // Create a lookup map for car model images
+            $carModelImages = [];
+            foreach ($carModels as $cm) {
+                $brandSlug = $cm->brand ? $cm->brand->slug : 'universal';
+                $carModelImages[$brandSlug . '_' . strtolower($cm->name)] = $cm->image ? \Storage::url($cm->image) : null;
+            }
+
             // Prepare products json data to avoid nested blade compilation error
             $productsJsonData = $products->map(function($p) {
                 return [
@@ -1559,7 +1587,14 @@
                 <div class="model-grid">
                     @foreach($modelsByBrand as $brandSlug => $brandData)
                         @foreach($brandData['models'] as $modelName => $count)
+                            @php
+                                $lookupKey = $brandSlug . '_' . strtolower($modelName);
+                                $modelBgImage = $carModelImages[$lookupKey] ?? null;
+                            @endphp
                             <div class="model-card" data-brand-slug="{{ $brandSlug }}" data-model-name="{{ $modelName }}">
+                                @if($modelBgImage)
+                                    <div class="model-card-bg" style="background-image: url('{{ $modelBgImage }}')"></div>
+                                @endif
                                 <span class="model-name-text">{{ $modelName }}</span>
                                 <span class="model-product-count">{{ $count }} {{ $count > 1 ? 'Components' : 'Component' }}</span>
                             </div>
