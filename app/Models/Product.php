@@ -36,7 +36,12 @@ class Product extends Model
 
     public function setImageAttribute($value)
     {
-        $this->attributes['image'] = is_array($value) ? json_encode(array_values($value)) : $value;
+        if (is_array($value)) {
+            ksort($value);
+            $this->attributes['image'] = json_encode(array_values($value));
+        } else {
+            $this->attributes['image'] = $value;
+        }
     }
 
     public function category()
