@@ -985,6 +985,65 @@
             text-transform: uppercase;
         }
 
+        .modal-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s, background 0.3s, transform 0.3s;
+        }
+        .modal-image-panel:hover .modal-nav-btn {
+            opacity: 1;
+        }
+        .modal-nav-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+        }
+        .modal-prev-btn { left: 16px; }
+        .modal-next-btn { right: 16px; }
+        
+        .modal-thumbnails {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            max-width: 90%;
+            overflow-x: auto;
+            padding: 4px;
+        }
+        .modal-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s, border-color 0.3s;
+        }
+        .modal-thumb.active {
+            border-color: #fff;
+            opacity: 1;
+        }
+        .modal-thumb:hover {
+            opacity: 0.9;
+        }
+
         .modal-info-panel {
             padding: 3rem;
             display: flex;
@@ -1438,7 +1497,8 @@
                     'description' => $p->description ?? 'No description available.',
                     'price' => $p->price_usd,
                     'formatted_price' => $p->price_usd ? 'From $ ' . number_format($p->price_usd, 2, '.', ',') : 'Price on Request',
-                    'image' => $p->image ? \Storage::url($p->image) : null,
+                    'image' => !empty($p->image) && isset($p->image[0]) ? \Storage::url($p->image[0]) : null,
+                    'images' => !empty($p->image) ? array_map(fn($img) => \Storage::url($img), $p->image) : [],
                     'brand_id' => $p->brand_id,
                     'brand_name' => $p->brand ? $p->brand->name : 'Raveil Custom',
                     'brand_slug' => $p->brand ? $p->brand->slug : 'raveil-custom',
@@ -1521,8 +1581,8 @@
                              data-car-model="{{ $modelName }}" 
                              data-product-id="{{ $product->id }}">
                             <div class="product-image-container">
-                                @if($product->image)
-                                    <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="product-image">
+                                @if(!empty($product->image) && isset($product->image[0]))
+                                    <img src="{{ Storage::url($product->image[0]) }}" alt="{{ $product->name }}" class="product-image">
                                 @else
                                     <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                                         <span style="font-size: 0.75rem; letter-spacing: 0.2em; color: var(--text-secondary);">NO IMAGE</span>
@@ -1562,6 +1622,13 @@
                 <button class="modal-close-btn" aria-label="Close modal">&times;</button>
                 <div class="modal-image-panel">
                     <img id="modal-product-image" src="" alt="">
+                    <button id="modal-prev-btn" class="modal-nav-btn modal-prev-btn" aria-label="Previous image">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <button id="modal-next-btn" class="modal-nav-btn modal-next-btn" aria-label="Next image">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                    <div id="modal-thumbnails" class="modal-thumbnails"></div>
                     <div id="modal-image-fallback" class="modal-image-placeholder" style="display: none;">No Image</div>
                 </div>
                 <div class="modal-info-panel">
@@ -1872,22 +1939,83 @@
 
             // --- Product Modal Operations ---
             const modal = document.getElementById('product-detail-modal');
+            let currentImgIndex = 0;
+            let productImages = [];
+
+            function showProductImage(index) {
+                const modalImage = document.getElementById('modal-product-image');
+                const fallbackImage = document.getElementById('modal-image-fallback');
+                const thumbContainer = document.getElementById('modal-thumbnails');
+
+                if (productImages.length > 0 && index >= 0 && index < productImages.length) {
+                    if (modalImage) {
+                        modalImage.src = productImages[index];
+                        modalImage.style.display = 'block';
+                    }
+                    if (fallbackImage) fallbackImage.style.display = 'none';
+
+                    // Update active thumbnail
+                    if (thumbContainer) {
+                        const thumbs = thumbContainer.querySelectorAll('.modal-thumb');
+                        thumbs.forEach((t, i) => {
+                            if (i === index) {
+                                t.classList.add('active');
+                                t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                            } else {
+                                t.classList.remove('active');
+                            }
+                        });
+                    }
+                } else {
+                    if (modalImage) modalImage.style.display = 'none';
+                    if (fallbackImage) fallbackImage.style.display = 'flex';
+                }
+            }
             
             function openProductModal(productId) {
                 const product = productsData.find(p => p.id == productId);
                 if (!product || !modal) return;
 
-                // Populate modal
-                const modalImage = document.getElementById('modal-product-image');
-                const fallbackImage = document.getElementById('modal-image-fallback');
-                if (product.image) {
-                    modalImage.src = product.image;
-                    modalImage.alt = product.name;
-                    modalImage.style.display = 'block';
-                    if (fallbackImage) fallbackImage.style.display = 'none';
+                const prevBtn = document.getElementById('modal-prev-btn');
+                const nextBtn = document.getElementById('modal-next-btn');
+                const thumbContainer = document.getElementById('modal-thumbnails');
+
+                // Clear previous thumbnails
+                if (thumbContainer) thumbContainer.innerHTML = '';
+
+                productImages = product.images || [];
+                currentImgIndex = 0;
+
+                if (productImages.length > 0) {
+                    showProductImage(0);
+
+                    // Show/hide navigation and build thumbnails
+                    if (productImages.length > 1) {
+                        if (prevBtn) prevBtn.style.display = 'flex';
+                        if (nextBtn) nextBtn.style.display = 'flex';
+
+                        productImages.forEach((imgSrc, idx) => {
+                            const thumb = document.createElement('img');
+                            thumb.src = imgSrc;
+                            thumb.className = 'modal-thumb' + (idx === 0 ? ' active' : '');
+                            thumb.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                currentImgIndex = idx;
+                                showProductImage(idx);
+                            });
+                            if (thumbContainer) thumbContainer.appendChild(thumb);
+                        });
+                    } else {
+                        if (prevBtn) prevBtn.style.display = 'none';
+                        if (nextBtn) nextBtn.style.display = 'none';
+                    }
                 } else {
-                    modalImage.style.display = 'none';
+                    const modalImage = document.getElementById('modal-product-image');
+                    const fallbackImage = document.getElementById('modal-image-fallback');
+                    if (modalImage) modalImage.style.display = 'none';
                     if (fallbackImage) fallbackImage.style.display = 'flex';
+                    if (prevBtn) prevBtn.style.display = 'none';
+                    if (nextBtn) nextBtn.style.display = 'none';
                 }
 
                 document.getElementById('modal-product-category').textContent = product.category_name;
@@ -1938,6 +2066,27 @@
                 const closeBtn = modal.querySelector('.modal-close-btn');
                 if (closeBtn) closeBtn.addEventListener('click', closeProductModal);
                 if (backdrop) backdrop.addEventListener('click', closeProductModal);
+
+                const prevBtn = document.getElementById('modal-prev-btn');
+                const nextBtn = document.getElementById('modal-next-btn');
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (productImages.length > 1) {
+                            currentImgIndex = (currentImgIndex - 1 + productImages.length) % productImages.length;
+                            showProductImage(currentImgIndex);
+                        }
+                    });
+                }
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (productImages.length > 1) {
+                            currentImgIndex = (currentImgIndex + 1) % productImages.length;
+                            showProductImage(currentImgIndex);
+                        }
+                    });
+                }
             }
             
             // Close modal on Escape key

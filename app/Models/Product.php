@@ -13,6 +13,32 @@ class Product extends Model
 
     protected $guarded = [];
 
+    public function getImageAttribute($value)
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        if (is_array($value)) {
+            return $value;
+        }
+
+        // If it's a JSON array, decode it
+        if (str_starts_with($value, '[') && str_ends_with($value, ']')) {
+            $decoded = json_decode($value, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return [$value];
+    }
+
+    public function setImageAttribute($value)
+    {
+        $this->attributes['image'] = is_array($value) ? json_encode(array_values($value)) : $value;
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

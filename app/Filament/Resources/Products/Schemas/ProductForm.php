@@ -70,6 +70,8 @@ class ProductForm
                     ->required(),
                 FileUpload::make('image')
                     ->image()
+                    ->multiple()
+                    ->reorderable()
                     ->disk('public')
                     ->directory('products')
                     ->preserveFilenames(),
